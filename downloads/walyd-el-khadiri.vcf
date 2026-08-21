@@ -1,0 +1,11 @@
+BEGIN:VCARD
+VERSION:3.0
+N:El Khadiri;Walyd;;;
+FN:Walyd El Khadiri
+ORG:Acme Meridian LLC
+TITLE:CEO & Founder
+EMAIL;type=INTERNET;type=WORK;type=pref:walyd@acmemeridian.com
+TEL;type=CELL;type=VOICE;type=pref:+61480345388
+URL:https://acmemeridian.com
+NOTE:Software · Worldwide. A limited liability company registered in Wyoming, USA.
+END:VCARD

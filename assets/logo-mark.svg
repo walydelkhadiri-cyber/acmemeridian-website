@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="12 6 116 88" fill="none" role="img" aria-label="Acme Meridian">
+  <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M18 88V12l52 36 52-36v76" stroke-width="9"/>
+    <path d="M42 88l28-40 28 40" stroke-width="9"/>
+    <path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/>
+  </g>
+</svg>
