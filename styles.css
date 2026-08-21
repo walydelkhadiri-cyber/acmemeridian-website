@@ -209,28 +209,6 @@ p{margin:0 0 1.1em}
          margin-bottom:.7rem}
 .proc p{color:var(--t3);font-size:.9rem;margin:0;line-height:1.6}
 
-/* ---------------------------------------------------------------- work */
-.work{background:var(--paper);color:var(--l1)}
-.work h2,.work h3{color:var(--l1)}
-.work .eyebrow{color:var(--l4)}
-.work .lede,.work p{color:var(--l3)}
-.work .rule{background:var(--lline)}
-.work-card{display:grid;grid-template-columns:1.05fr 1fr;gap:clamp(2rem,5vw,5rem);
-           align-items:center;margin-top:clamp(2.5rem,5vw,4rem)}
-.work-shot{aspect-ratio:4/3;background:var(--ink);border-radius:14px;position:relative;
-           overflow:hidden}
-.work-shot .device{position:absolute;left:50%;top:9%;transform:translateX(-50%);
-  width:51%;height:auto;border-radius:8%/3.7%;
-  box-shadow:0 40px 80px -20px rgba(0,0,0,.95),0 0 0 1px rgba(255,255,255,.16)}
-.work-shot .glow{position:absolute;inset:0;
-  background:radial-gradient(ellipse 62% 58% at 50% 88%,rgba(255,255,255,.16),transparent 68%)}
-.work-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin:1.8rem 0}
-.tag{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;padding:.42rem .8rem;
-     border:1px solid var(--lline);border-radius:100px;color:var(--l3)}
-.work .btn{--fg:var(--l1);--bd:var(--lline)}
-.work .btn::before{background:var(--l1)}
-.work .btn:hover{color:var(--paper);border-color:var(--l1)}
-
 /* ---------------------------------------------------------------- the card */
 #card{position:relative;overflow:hidden}
 #card::before{content:"";position:absolute;inset:0;
@@ -309,7 +287,7 @@ p{margin:0 0 1.1em}
 
 /* ---------------------------------------------------------------- responsive */
 @media (max-width:900px){
-  .split,.work-card{grid-template-columns:1fr}
+  .split{grid-template-columns:1fr}
   .cap-in{grid-template-columns:3.2rem 1fr;row-gap:.6rem}
   .cap-in p{grid-column:2}
   .cap-ar{display:none}
