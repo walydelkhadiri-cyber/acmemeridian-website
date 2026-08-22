@@ -121,26 +121,28 @@
 <section class="section" id="capabilities">
   <div class="wrap">
     <p class="eyebrow" data-reveal>Capabilities</p>
-    <h2 data-reveal data-d="1" style="max-width:14ch;margin-bottom:clamp(2rem,4vw,3rem)">
+    <h2 data-reveal data-d="1" style="max-width:14ch;margin-bottom:clamp(1.6rem,3vw,2.4rem)">
       What we build</h2>
   </div>
 
   <div class="capx" id="capx" data-reveal data-d="2">
     <div class="capx-stage" id="capstage">
-      <button class="capx-arrow prev" id="capprev" type="button" aria-label="Previous capability"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4L7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button class="capx-arrow next" id="capnext" type="button" aria-label="Next capability"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4L7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="capx-arrow prev" id="capprev" type="button" aria-label="Previous device"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4L7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="capx-arrow next" id="capnext" type="button" aria-label="Next device"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4L7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
+
+    <div class="capx-rail" id="caprail" role="tablist" aria-label="What we build on this device"></div>
 
     <ol class="capx-list" id="caplist">
 
-    <li class="capx-item" data-device="laptop">
+    <li class="capx-item" data-device="laptop" data-tab="Custom software">
       <div class="scr scr--mac" data-scr>
         <div class="win">
           <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span>
             <span class="win-title">acme-meridian &nbsp;·&nbsp; main</span></div>
           <div class="win-body ide">
             <div class="ide-side">
-              <span class="ide-f on">README.md</span>
+              <span class="ide-f on">Overview</span>
               <span class="ide-f">core/engine.ts</span>
               <span class="ide-f">core/ledger.ts</span>
               <span class="ide-f">api/routes.ts</span>
@@ -155,7 +157,6 @@
                 <div class="ln">&nbsp;&nbsp;post(entry: Entry) {</div>
                 <div class="ln">&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> this.commit(entry)</div>
                 <div class="ln">&nbsp;&nbsp;}</div>
-                <div class="ln">}</div>
               </div>
             </div>
           </div>
@@ -163,7 +164,7 @@
       </div>
     </li>
 
-    <li class="capx-item" data-device="laptop">
+    <li class="capx-item" data-device="laptop" data-tab="Web platforms">
       <div class="scr scr--mac" data-scr>
         <div class="win">
           <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span>
@@ -182,26 +183,7 @@
       </div>
     </li>
 
-    <li class="capx-item" data-device="phone">
-      <div class="scr scr--phone" data-scr>
-        <div class="ios">
-          <div class="ios-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
-          <div class="ios-body">
-            <span class="scr-num">03</span>
-            <h3>Mobile Applications</h3>
-            <p>Native iOS and Android apps, designed and engineered in-house — through store review, subscriptions and the release cadence that comes after launch.</p>
-            <div class="ios-rows">
-              <div class="ios-row"><span>App Store review</span><em>Passed</em></div>
-              <div class="ios-row"><span>Subscriptions</span><em>Live</em></div>
-              <div class="ios-row"><span>Crash-free sessions</span><em>99.8%</em></div>
-            </div>
-          </div>
-          <div class="ios-tabs"><i class="on"></i><i></i><i></i><i></i><span class="ios-home"></span></div>
-        </div>
-      </div>
-    </li>
-
-    <li class="capx-item" data-device="laptop">
+    <li class="capx-item" data-device="laptop" data-tab="SaaS products">
       <div class="scr scr--mac" data-scr>
         <div class="win">
           <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span>
@@ -209,7 +191,7 @@
           <div class="win-body app">
             <div class="app-side"><span class="am"></span><i class="on"></i><i></i><i></i><i></i></div>
             <div class="app-main">
-              <span class="scr-num">04</span>
+              <span class="scr-num">03</span>
               <h3>SaaS Products</h3>
               <p>From an idea to a product people pay for: multi-tenancy, auth, billing, analytics, and the release pipeline that keeps it shipping.</p>
               <div class="kpis">
@@ -224,7 +206,26 @@
       </div>
     </li>
 
-    <li class="capx-item" data-device="tablet">
+    <li class="capx-item" data-device="phone" data-tab="Mobile applications">
+      <div class="scr scr--phone" data-scr>
+        <div class="ios">
+          <div class="ios-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
+          <div class="ios-body">
+            <span class="scr-num">04</span>
+            <h3>Mobile Applications</h3>
+            <p>Native iOS and Android apps, designed and engineered in-house — through store review, subscriptions and the release cadence that comes after launch.</p>
+            <div class="ios-rows">
+              <div class="ios-row"><span>Store review</span><em>Passed</em></div>
+              <div class="ios-row"><span>Subscriptions</span><em>Live</em></div>
+              <div class="ios-row"><span>Crash-free</span><em>99.8%</em></div>
+            </div>
+          </div>
+          <div class="ios-tabs"><i class="on"></i><i></i><i></i><i></i><span class="ios-home"></span></div>
+        </div>
+      </div>
+    </li>
+
+    <li class="capx-item" data-device="tablet" data-tab="Business digitalization">
       <div class="scr scr--pad" data-scr>
         <div class="pad">
           <div class="pad-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
@@ -243,7 +244,7 @@
       </div>
     </li>
 
-    <li class="capx-item" data-device="tablet">
+    <li class="capx-item" data-device="tablet" data-tab="AI &amp; automation">
       <div class="scr scr--pad" data-scr>
         <div class="pad">
           <div class="pad-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
@@ -267,7 +268,7 @@
     </ol>
 
     <div class="capx-foot">
-      <div class="capx-dots" id="capdots" role="tablist" aria-label="Capabilities"></div>
+      <div class="capx-dots" id="capdots" aria-label="Devices"></div>
       <a class="btn" href="/#contact"><span>Start a project</span>
         <svg class="ar" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
           <path d="M2 11L11 2M11 2H4M11 2v7" stroke="currentColor" stroke-width="1.2"

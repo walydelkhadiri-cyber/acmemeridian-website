@@ -182,55 +182,62 @@ p{margin:0 0 1.1em}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,6rem);align-items:start}
 
 /* ---------------------------------------------------------------- capabilities
-   A showroom: one device floats in a lit panel and the copy lives ON its screen,
-   as real HTML projected into the 3D scene (CSS3DRenderer) — so the type stays
-   vector-sharp, selectable and indexable instead of baked into a texture.
-   The six screens ship as flat framed mockups; `.is-3d` lifts them into WebGL. */
-.capx{display:grid;gap:clamp(1.4rem,2.6vw,2.2rem)}
-/* the stage runs full-bleed; everything else keeps the page gutter */
-.capx-list,.capx-foot{width:100%;max-width:var(--maxw);margin-inline:auto;
-                      padding-inline:var(--gut)}
+   A product stage: one device floats on the page's own black, lit only by an
+   image-based studio, with its interface running as real HTML projected into
+   the 3D scene. Arrows change device; the rail under it changes what that
+   device is showing, so a laptop carries three subjects rather than three
+   laptops carrying one each.
+   The six screens ship as flat mockups; `.is-3d` lifts them into WebGL.       */
+.capx{display:grid;gap:clamp(1.2rem,2.4vw,2rem)}
+.capx-list,.capx-foot,.capx-rail{width:100%;max-width:var(--maxw);
+  margin-inline:auto;padding-inline:var(--gut)}
 
-.capx-stage{
-  display:none;position:relative;width:100%;
-  aspect-ratio:16/10;min-height:300px;max-height:min(78vh,760px);
-  border-radius:clamp(12px,1.4vw,20px);overflow:hidden;isolation:isolate;
-  touch-action:pan-y;
-  background:
-    radial-gradient(130% 100% at 50% -14%,#fff 0%,#f3f3f5 44%,#e6e6ea 74%,#dcdce1 100%);
-}
+.capx-stage{display:none;position:relative;width:100%;
+  aspect-ratio:16/9;min-height:300px;max-height:min(76vh,720px);
+  touch-action:pan-y;isolation:isolate}
 .is-3d .capx-stage{display:block}
-/* a faint horizon so the floating device has somewhere to cast onto */
+/* the only thing separating a near-black chassis from a black page */
 .capx-stage::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:radial-gradient(58% 34% at 50% 96%,rgba(11,11,11,.09),transparent 72%)}
-.capx-stage::after{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;
-  box-shadow:inset 0 0 0 1px rgba(11,11,11,.08);border-radius:inherit}
+  background:radial-gradient(46% 52% at 50% 46%,rgba(255,255,255,.075),
+                             rgba(255,255,255,.022) 52%,transparent 76%)}
 .capx-gl{position:absolute;inset:0;z-index:1;width:100%!important;height:100%!important;
          display:block;cursor:grab}
 .capx-gl:active{cursor:grabbing}
 .capx-css{position:absolute;inset:0;z-index:2;pointer-events:none}
 
-/* ------------------------------------------------------------------- arrows
-   No ring, no border — a bare chevron that darkens and steps aside on hover. */
+/* ------------------------------------------------------------------- arrows */
 .capx-arrow{position:absolute;top:50%;translate:0 -50%;z-index:3;
   display:none;place-items:center;padding:0;border:0;background:none;cursor:pointer;
-  width:clamp(46px,5vw,64px);height:clamp(70px,9vw,104px);border-radius:8px;
-  color:rgba(11,11,11,.38);-webkit-tap-highlight-color:transparent;
-  transition:color .4s var(--ease),translate .4s var(--ease),opacity .4s var(--ease)}
+  width:clamp(48px,5vw,68px);height:clamp(74px,9vw,108px);border-radius:8px;
+  color:var(--t4);-webkit-tap-highlight-color:transparent;
+  transition:color .4s var(--ease),translate .4s var(--ease)}
 .is-3d .capx-arrow{display:grid}
-.capx-arrow svg{width:clamp(21px,2.3vw,29px);height:auto}
-.capx-arrow:hover{color:rgba(11,11,11,.85)}
-.capx-arrow:focus-visible{outline:1.5px solid rgba(11,11,11,.55);outline-offset:2px;
-                          color:rgba(11,11,11,.85)}
-.capx-arrow.prev{left:clamp(0px,1.4vw,20px)}
+.capx-arrow svg{width:clamp(22px,2.4vw,30px);height:auto}
+.capx-arrow:hover{color:var(--t1)}
+.capx-arrow:focus-visible{outline:1.5px solid var(--t4);outline-offset:2px;color:var(--t1)}
+.capx-arrow.prev{left:clamp(0px,1.2vw,18px)}
 .capx-arrow.prev:hover{translate:-5px -50%}
-.capx-arrow.next{right:clamp(0px,1.4vw,20px)}
+.capx-arrow.next{right:clamp(0px,1.2vw,18px)}
 .capx-arrow.next svg{rotate:180deg}
 .capx-arrow.next:hover{translate:5px -50%}
 
-/* --------------------------------------------------------------------- list
-   Flat fallback: six framed mockups stacked, fully readable with no WebGL. */
-.capx-list{list-style:none;margin:0;padding:0;display:grid;gap:clamp(1.8rem,3.4vw,2.8rem)}
+/* --------------------------------------------------------------------- rail
+   What this device is showing. Built from the items, so a device with a single
+   subject shows a plain label instead of a row of one. */
+.capx-rail{display:none;flex-wrap:wrap;justify-content:center;gap:.5rem}
+.is-3d .capx-rail{display:flex}
+.capx-tab{border:1px solid var(--line);background:none;color:var(--t3);cursor:pointer;
+  font:inherit;font-size:.8rem;letter-spacing:.02em;padding:.52em 1.1em;border-radius:2em;
+  transition:color .35s var(--ease),border-color .35s var(--ease),background .35s var(--ease)}
+.capx-tab:hover{color:var(--t1);border-color:var(--t4)}
+.capx-tab[aria-selected="true"]{background:var(--t1);border-color:var(--t1);color:var(--ink)}
+.capx-tab:focus-visible{outline:2px solid var(--t1);outline-offset:3px}
+.capx-rail .solo{font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;
+                 color:var(--t4);padding:.52em 0}
+
+/* --------------------------------------------------------------------- list */
+.capx-list{list-style:none;margin:0;padding-block:0;display:grid;
+           gap:clamp(1.8rem,3.4vw,2.8rem)}
 .capx-item{display:grid;justify-items:center}
 .is-3d .capx-list{display:none}
 
@@ -245,163 +252,168 @@ p{margin:0 0 1.1em}
 .capx-dot:focus-visible{outline:2px solid var(--t1);outline-offset:4px}
 
 /* ================================================================== screens
-   Everything below is authored in `em` against the screen's own font-size, so
-   one variable rescales a whole interface for a 14" lid or a 6" handset.      */
-.scr{--sw:1440px;--sh:900px;--sfs:32px;--r:22px;
-  position:relative;overflow:hidden;background:#0b0b0d;color:rgba(255,255,255,.9);
+   Light interfaces: a screen that is on reads as a screen. Against a near-black
+   chassis on a black page it is also the only thing that gives the object edge.
+   Authored in `em` against the screen's own font-size, so one variable rescales
+   a whole interface from a 14" lid to a 6" handset.                            */
+.scr{--sw:1440px;--sh:900px;--sfs:32px;--r:25px;
+  --bg:#f4f4f6; --chrome:#e7e8ec; --surf:#fff;
+  --ink:#0b0b0b; --dim:rgba(11,11,11,.6); --faint:rgba(11,11,11,.42);
+  --hair:rgba(11,11,11,.1); --hair2:rgba(11,11,11,.055);
+  position:relative;overflow:hidden;background:var(--bg);color:var(--ink);
   font-family:var(--sans);font-weight:300;line-height:1.5;letter-spacing:-.004em;
-  width:100%;max-width:820px;font-size:clamp(9px,1.55vw,15px);border-radius:6px;
-  border:1px solid var(--line);aspect-ratio:16/10}
-.scr--phone{--sw:780px;--sh:1690px;--sfs:46px;--r:56px;max-width:300px;aspect-ratio:78/169}
-.scr--pad{--sw:1600px;--sh:1200px;--sfs:37px;--r:44px;max-width:760px;aspect-ratio:4/3}
+  width:100%;max-width:820px;font-size:clamp(9px,1.55vw,15px);
+  border-radius:8px;aspect-ratio:16/10;
+  box-shadow:0 0 0 1px rgba(255,255,255,.1),0 30px 60px -34px #000}
+.scr--phone{--sw:780px;--sh:1690px;--sfs:46px;--r:115px;max-width:290px;aspect-ratio:78/169}
+.scr--pad{--sw:1600px;--sh:1200px;--sfs:37px;--r:47px;max-width:740px;aspect-ratio:4/3}
 
 .is-3d .scr{width:var(--sw);height:var(--sh);max-width:none;aspect-ratio:auto;
-  font-size:var(--sfs);border:0;border-radius:var(--r);
+  font-size:var(--sfs);border-radius:var(--r);box-shadow:none;
+  opacity:0;transition:opacity .42s var(--ease);
   backface-visibility:hidden;-webkit-font-smoothing:antialiased}
+.is-3d .scr.on{opacity:1}
 
 .scr h3{font-family:var(--display);font-weight:300;font-size:2.05em;line-height:1.04;
-        letter-spacing:-.012em;color:#fff;margin:.3em 0 .46em}
-.scr p{margin:0;font-size:1em;line-height:1.58;color:rgba(255,255,255,.66);max-width:24em}
-.scr .scr-num{display:block;font-size:.5em;letter-spacing:.26em;
-              color:rgba(255,255,255,.45);font-variant-numeric:tabular-nums}
+        letter-spacing:-.014em;color:var(--ink);margin:.3em 0 .46em}
+.scr p{margin:0;font-size:1em;line-height:1.58;color:var(--dim);max-width:24em}
+.scr .scr-num{display:block;font-size:.5em;letter-spacing:.26em;color:var(--faint);
+              font-variant-numeric:tabular-nums}
 .scr--phone h3{font-size:1.72em}
-.scr--phone::before{content:"";position:absolute;z-index:3;left:50%;top:.62em;translate:-50% 0;
-  width:5.1em;height:1.5em;border-radius:1em;background:#000}
+.scr--phone::before{content:"";position:absolute;z-index:4;left:50%;top:1.15em;
+  translate:-50% 0;width:5.8em;height:2.05em;border-radius:1.1em;background:#000}
+.scr--phone .ios-status{padding-top:1.5em}
 
 /* window chrome ------------------------------------------------------------ */
-.scr .win{height:100%;display:flex;flex-direction:column;background:#0d0d0f}
+.scr .win{height:100%;display:flex;flex-direction:column;background:var(--bg)}
 .scr .win-bar{flex:none;height:2em;display:flex;align-items:center;gap:1em;padding:0 1.1em;
-  background:#17181b;border-bottom:1px solid rgba(255,255,255,.07)}
+  background:var(--chrome);border-bottom:1px solid var(--hair)}
 .scr .dots{display:flex;gap:.4em;flex:none}
-.scr .dots i{width:.45em;height:.45em;border-radius:50%;background:rgba(255,255,255,.2)}
-.scr .win-title{font-size:.5em;letter-spacing:.08em;color:rgba(255,255,255,.5)}
+.scr .dots i{width:.45em;height:.45em;border-radius:50%;background:rgba(11,11,11,.18)}
+.scr .win-title{font-size:.5em;letter-spacing:.08em;color:var(--faint)}
 .scr .url{display:flex;align-items:center;gap:.5em;margin:0 auto;padding:.3em 1.4em;
-  border-radius:1em;background:rgba(255,255,255,.07);font-size:.5em;
-  color:rgba(255,255,255,.6);letter-spacing:.01em}
-.scr .url svg{width:1em;height:1em;flex:none;opacity:.55}
+  border-radius:1em;background:rgba(11,11,11,.055);font-size:.5em;color:var(--dim)}
+.scr .url svg{width:1em;height:1em;flex:none;opacity:.5}
 
 /* 01 — editor -------------------------------------------------------------- */
 .scr .ide{flex:1;display:flex;min-height:0}
 .scr .ide-side{flex:none;width:9.4em;padding:1.3em 1em;display:flex;flex-direction:column;
-  gap:.9em;background:#0a0a0c;border-right:1px solid rgba(255,255,255,.06)}
-.scr .ide-f{font-size:.48em;letter-spacing:.02em;color:rgba(255,255,255,.4)}
-.scr .ide-f.on{color:rgba(255,255,255,.86)}
+  gap:.9em;background:var(--chrome);border-right:1px solid var(--hair)}
+.scr .ide-f{font-size:.48em;letter-spacing:.02em;color:var(--faint)}
+.scr .ide-f.on{color:var(--ink)}
 .scr .ide-main{flex:1;min-width:0;padding:1.4em 2em;display:flex;flex-direction:column;
-               justify-content:center}
-.scr .code{margin-top:1.4em;padding:1em 1.15em;border-radius:.36em;
-  background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.06);
-  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  font-size:.5em;line-height:1.9;color:rgba(255,255,255,.4)}
-.scr .code b{font-weight:500;color:rgba(255,255,255,.8)}
+               justify-content:center;background:var(--surf)}
+.scr .code{margin-top:1.4em;padding:1em 1.15em;border-radius:.36em;background:#f1f1f4;
+  border:1px solid var(--hair2);font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.5em;line-height:1.9;color:rgba(11,11,11,.52)}
+.scr .code b{font-weight:500;color:var(--ink)}
 
 /* 02 — landing page -------------------------------------------------------- */
-.scr .page{flex:1;padding:0 3.6em;display:flex;flex-direction:column;justify-content:center}
+.scr .page{flex:1;padding:0 3.6em;display:flex;flex-direction:column;justify-content:center;
+           background:var(--surf)}
 .scr .tiles{display:flex;gap:.9em;margin-top:1.8em}
 .scr .tiles>div{flex:1;max-width:9em;padding:.95em 1.05em;border-radius:.4em;
-  border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.03)}
+  border:1px solid var(--hair);background:var(--bg)}
 .scr .tiles b{display:block;font-family:var(--display);font-weight:300;font-size:1.5em;
-              line-height:1;color:#fff}
+              line-height:1;color:var(--ink)}
 .scr .tiles span{display:block;margin-top:.55em;font-size:.46em;letter-spacing:.18em;
-                 text-transform:uppercase;color:rgba(255,255,255,.42)}
+                 text-transform:uppercase;color:var(--faint)}
 
-/* 04 — SaaS dashboard ------------------------------------------------------ */
+/* 03 — SaaS dashboard ------------------------------------------------------ */
 .scr .app{flex:1;display:flex;min-height:0}
 .scr .app-side{flex:none;width:3.6em;padding:1.3em 0;display:flex;flex-direction:column;
-  align-items:center;gap:1.15em;background:#0a0a0c;border-right:1px solid rgba(255,255,255,.06)}
-.scr .app-side .am{width:1.2em;height:1.2em;border-radius:.3em;background:rgba(255,255,255,.9);
+  align-items:center;gap:1.15em;background:var(--chrome);border-right:1px solid var(--hair)}
+.scr .app-side .am{width:1.2em;height:1.2em;border-radius:.3em;background:var(--ink);
                    margin-bottom:.45em}
-.scr .app-side i{width:1.1em;height:.28em;border-radius:.14em;background:rgba(255,255,255,.14)}
-.scr .app-side i.on{background:rgba(255,255,255,.72)}
+.scr .app-side i{width:1.1em;height:.28em;border-radius:.14em;background:rgba(11,11,11,.16)}
+.scr .app-side i.on{background:rgba(11,11,11,.6)}
 .scr .app-main{flex:1;min-width:0;padding:1.4em 2.3em;display:flex;flex-direction:column;
-               justify-content:center}
+               justify-content:center;background:var(--surf)}
 .scr .kpis{display:flex;gap:1.8em;margin-top:1.5em}
 .scr .kpis span{display:block;font-size:.46em;letter-spacing:.18em;text-transform:uppercase;
-                color:rgba(255,255,255,.42)}
+                color:var(--faint)}
 .scr .kpis b{display:block;margin-top:.34em;font-family:var(--display);font-weight:300;
-             font-size:1.34em;line-height:1;color:#fff}
+             font-size:1.34em;line-height:1;color:var(--ink)}
 .scr .chart{display:flex;align-items:flex-end;gap:.44em;height:3.2em;margin-top:1.35em}
 .scr .chart i{flex:1;max-width:1.15em;border-radius:.1em .1em 0 0;
-  background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(255,255,255,.1))}
+  background:linear-gradient(180deg,rgba(11,11,11,.68),rgba(11,11,11,.16))}
 
-/* 03 — iOS ----------------------------------------------------------------- */
-.scr .ios{height:100%;display:flex;flex-direction:column;background:#0b0b0d}
+/* 04 — iOS ----------------------------------------------------------------- */
+.scr .ios{height:100%;display:flex;flex-direction:column;background:var(--bg)}
 .scr .ios-status{flex:none;display:flex;align-items:center;justify-content:space-between;
-  padding:1.15em 1.7em .3em;font-size:.52em;letter-spacing:.01em;color:rgba(255,255,255,.85)}
+  padding:1.15em 1.7em .3em;font-size:.52em;color:var(--ink)}
 .scr .ios-ind{display:flex;align-items:center;gap:.55em}
-.scr .ios-ind .sig{width:1.1em;height:.62em;border-radius:.1em;background:rgba(255,255,255,.78)}
-.scr .ios-ind .bat{width:1.65em;height:.75em;border-radius:.2em;
-                   border:1px solid rgba(255,255,255,.55)}
+.scr .ios-ind .sig{width:1.1em;height:.62em;border-radius:.1em;background:var(--ink)}
+.scr .ios-ind .bat{width:1.65em;height:.75em;border-radius:.2em;border:1px solid var(--dim)}
 .scr .ios-body{flex:1;min-height:0;padding:1.5em 1.4em;display:flex;flex-direction:column;
                justify-content:center}
 .scr .ios-rows{margin-top:1.5em;display:flex;flex-direction:column;gap:.5em}
 .scr .ios-row{display:flex;align-items:center;justify-content:space-between;gap:1em;
-  padding:.9em 1.05em;border-radius:.55em;background:rgba(255,255,255,.05);font-size:.6em}
-.scr .ios-row em{font-style:normal;color:rgba(255,255,255,.5)}
+  padding:.9em 1.05em;border-radius:.55em;background:var(--surf);font-size:.6em;
+  box-shadow:0 1px 2px rgba(11,11,11,.05)}
+.scr .ios-row em{font-style:normal;color:var(--faint)}
 .scr .ios-tabs{flex:none;position:relative;display:flex;align-items:center;
-  justify-content:space-around;padding:1em 2.2em 1.9em;
-  border-top:1px solid rgba(255,255,255,.07)}
-.scr .ios-tabs i{width:1.15em;height:1.15em;border-radius:.3em;background:rgba(255,255,255,.16)}
-.scr .ios-tabs i.on{background:rgba(255,255,255,.82)}
+  justify-content:space-around;padding:1em 2.2em 1.9em;background:var(--chrome);
+  border-top:1px solid var(--hair)}
+.scr .ios-tabs i{width:1.15em;height:1.15em;border-radius:.3em;background:rgba(11,11,11,.2)}
+.scr .ios-tabs i.on{background:var(--ink)}
 .scr .ios-home{position:absolute;left:50%;bottom:.65em;translate:-50% 0;
-               width:7em;height:.22em;border-radius:.11em;background:rgba(255,255,255,.32)}
+               width:7em;height:.22em;border-radius:.11em;background:rgba(11,11,11,.35)}
 
 /* 05 / 06 — iPad ----------------------------------------------------------- */
-.scr .pad{height:100%;display:flex;flex-direction:column;background:#0b0b0d}
+.scr .pad{height:100%;display:flex;flex-direction:column;background:var(--bg)}
 .scr .pad-status{flex:none;display:flex;align-items:center;justify-content:space-between;
-  padding:.85em 1.8em .15em;font-size:.5em;color:rgba(255,255,255,.72)}
+  padding:.85em 1.8em .15em;font-size:.5em;color:var(--dim)}
 .scr .pad-body{flex:1;min-height:0;padding:1.6em 2.8em;display:flex;flex-direction:column;
                justify-content:center}
 .scr .flow{display:flex;gap:.85em;margin-top:1.8em}
 .scr .fl{position:relative;flex:1;padding:1.05em 1.15em;border-radius:.45em;
-  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
-.scr .fl span{display:block;font-size:.6em;color:#fff}
+  border:1px solid var(--hair);background:var(--surf)}
+.scr .fl span{display:block;font-size:.6em;color:var(--ink)}
 .scr .fl em{display:block;margin-top:.45em;font-style:normal;font-size:.46em;line-height:1.5;
-            color:rgba(255,255,255,.45)}
+            color:var(--faint)}
 .scr .fl.done::after{content:"";position:absolute;top:1.05em;right:1em;
   width:.52em;height:.28em;rotate:-45deg;
-  border-left:.09em solid rgba(255,255,255,.85);border-bottom:.09em solid rgba(255,255,255,.85)}
+  border-left:.09em solid var(--ink);border-bottom:.09em solid var(--ink)}
 .scr .pad-body.chat{flex-direction:row;padding:0}
 .scr .chat-side{flex:none;width:5.4em;padding:1.5em 0;display:flex;flex-direction:column;
-  align-items:center;gap:1.05em;background:#0a0a0c;border-right:1px solid rgba(255,255,255,.06)}
-.scr .chat-side .am{width:1.25em;height:1.25em;border-radius:.3em;background:rgba(255,255,255,.9);
+  align-items:center;gap:1.05em;background:var(--chrome);border-right:1px solid var(--hair)}
+.scr .chat-side .am{width:1.25em;height:1.25em;border-radius:.3em;background:var(--ink);
                     margin-bottom:.35em}
-.scr .chat-side i{width:2.7em;height:.3em;border-radius:.15em;background:rgba(255,255,255,.13)}
-.scr .chat-side i.on{background:rgba(255,255,255,.6)}
+.scr .chat-side i{width:2.7em;height:.3em;border-radius:.15em;background:rgba(11,11,11,.16)}
+.scr .chat-side i.on{background:rgba(11,11,11,.55)}
 .scr .chat-main{flex:1;min-width:0;padding:1.5em 2.3em;display:flex;flex-direction:column;
-                justify-content:center;gap:.85em}
+                justify-content:center;gap:.85em;background:var(--surf)}
 .scr .bub{border-radius:.7em}
 .scr .bub.you{align-self:flex-end;max-width:62%;padding:.9em 1.15em;
-  background:rgba(255,255,255,.09);font-size:.6em;color:rgba(255,255,255,.82)}
-.scr .bub.bot{padding:1.35em 1.55em;background:rgba(255,255,255,.035);
-              border:1px solid rgba(255,255,255,.07)}
+  background:var(--ink);font-size:.6em;color:#fff}
+.scr .bub.bot{padding:1.35em 1.55em;background:var(--bg);border:1px solid var(--hair)}
 .scr .chips{display:flex;flex-wrap:wrap;gap:.5em;margin-top:1.15em}
-.scr .chips span{padding:.45em .9em;border-radius:1em;border:1px solid rgba(255,255,255,.12);
-  font-size:.44em;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.scr .chips span{padding:.45em .9em;border-radius:1em;border:1px solid var(--hair);
+  font-size:.44em;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
 .scr .composer{margin-top:.35em;display:flex;align-items:center;justify-content:space-between;
-  padding:.85em 1.25em;border-radius:.6em;border:1px solid rgba(255,255,255,.1);
-  font-size:.54em;color:rgba(255,255,255,.35)}
-.scr .composer i{width:1.35em;height:1.35em;border-radius:50%;background:rgba(255,255,255,.75)}
+  padding:.85em 1.25em;border-radius:.6em;border:1px solid var(--hair);
+  font-size:.54em;color:var(--faint)}
+.scr .composer i{width:1.35em;height:1.35em;border-radius:50%;background:var(--ink)}
 
-/* Narrow viewports shrink the device on screen, so the interface inside it is
-   scaled up to compensate — the copy has to stay readable at 375px. */
+/* Narrow viewports shrink the device, so the interface inside it is scaled up
+   and stripped to its message — 300px of screen cannot hold a UI and a
+   paragraph at once. */
 @media (max-width:860px){
-  /* a tall, edge-to-edge stage: a device shown small cannot carry a paragraph */
-  .capx-stage{aspect-ratio:auto;height:min(74vh,600px);max-height:none;min-height:430px;
-              border-radius:0}
-  .is-3d .scr--mac{--sfs:56px}
+  .capx-stage{aspect-ratio:auto;height:min(72vh,580px);max-height:none;min-height:420px}
+  .is-3d .scr--mac{--sfs:62px}
   .is-3d .scr--pad{--sfs:66px}
   .is-3d .scr--phone{--sfs:52px}
-  /* A screen 300px wide cannot hold an interface AND the message. Strip it back
-     to the message; the chrome that identifies the platform stays. */
   .is-3d .scr .ide-side,.is-3d .scr .app-side,.is-3d .scr .chat-side,
   .is-3d .scr .code,.is-3d .scr .chart,.is-3d .scr .tiles,.is-3d .scr .kpis,
   .is-3d .scr .ios-rows,.is-3d .scr .flow,.is-3d .scr .chips,
   .is-3d .scr .composer,.is-3d .scr .bub.you{display:none}
-  .is-3d .scr .ide-main,.is-3d .scr .app-main{padding:1.2em 1.8em}
+  .is-3d .scr .ide-main,.is-3d .scr .app-main{padding:1em 1.5em}
   .is-3d .scr .chat-main{padding:1.2em 1.7em}
   .is-3d .scr .bub.bot{background:none;border:0;padding:0}
-  .is-3d .scr h3{font-size:1.8em;margin:.3em 0 .5em}
-  .is-3d .scr p{max-width:none;line-height:1.52}
+  .is-3d .scr h3{font-size:1.66em;margin:.28em 0 .46em}
+  .is-3d .scr p{max-width:none;line-height:1.48}
+  .capx-tab{font-size:.74rem;padding:.5em .95em}
 }
 
 /* ---------------------------------------------------------------- process */

@@ -1,13 +1,17 @@
 /* =============================================================================
-   Capabilities — a lit showroom with one device floating in it.
+   Capabilities — a product stage.
 
-   Two renderers share one camera. WebGL draws the hardware; CSS3DRenderer draws
-   the interface on the screen as real DOM, so the copy stays vector-sharp,
-   selectable and indexable instead of being baked into a texture.
+   One device floats on the page's own black. WebGL draws the hardware; a second
+   renderer projects the interface onto its screen as real DOM, so the type stays
+   vector-sharp, selectable and indexable rather than baked into a texture.
 
-   Everything is modelled in centimetres at the real product dimensions, and lit
-   by an image-based studio environment — a metal with no environment to reflect
-   renders as a flat black shape, which is what "3D that looks fake" usually is.
+   Arrows change the device. The rail underneath changes what that device is
+   showing — a laptop carries three subjects instead of three laptops carrying
+   one each.
+
+   Everything is modelled in centimetres at the real product dimensions and lit
+   by an image-based studio: a metal with no environment to reflect renders as a
+   flat dark shape, which is most of what reads as "fake 3D".
 
    Loaded on demand by app.js. The six screens already exist in the HTML as flat
    mockups; this module lifts them into the scene and leaves them alone if the
@@ -36,46 +40,54 @@ function roundedRect(w, h, r) {
   return s;
 }
 
-/* A body: rounded rectangle in XY, extruded along Z, bevelled on both faces so
-   the silhouette catches a highlight the way a machined edge does. */
+/* Rounded rectangle extruded along Z, bevelled on both faces so the silhouette
+   carries a chamfer highlight — the line that makes machined metal read. */
 function slab(w, h, d, r, bev, seg) {
-  bev = bev == null ? Math.min(0.12, d * 0.32) : bev;
+  bev = bev == null ? Math.min(0.1, d * 0.28) : bev;
   const g = new THREE.ExtrudeGeometry(roundedRect(w - bev * 2, h - bev * 2, r - bev), {
     depth: Math.max(0.001, d - bev * 2),
-    bevelEnabled: true, bevelSize: bev, bevelThickness: bev, bevelSegments: 3,
-    curveSegments: seg || 16, steps: 1
+    bevelEnabled: true, bevelSize: bev, bevelThickness: bev, bevelSegments: 4,
+    curveSegments: seg || 18, steps: 1
   });
   g.translate(0, 0, -(d - bev * 2) / 2);
   g.computeVertexNormals();
   return g;
 }
 
-const panel = (w, h, r, seg) => new THREE.ShapeGeometry(roundedRect(w, h, r), seg || 14);
+const panel = (w, h, r, seg) => new THREE.ShapeGeometry(roundedRect(w, h, r), seg || 16);
 
 /* ================================================================ materials */
 
-const shell = (c) => new THREE.MeshPhysicalMaterial({
-  color: c, metalness: 0.94, roughness: 0.35, envMapIntensity: 1.25
+const shell = () => new THREE.MeshPhysicalMaterial({
+  color: 0x141417, metalness: 0.97, roughness: 0.25, envMapIntensity: 1.7
+});
+const band = () => new THREE.MeshPhysicalMaterial({
+  color: 0x25252a, metalness: 0.99, roughness: 0.14, envMapIntensity: 2.4
 });
 const glassMat = () => new THREE.MeshPhysicalMaterial({
-  color: 0x050507, metalness: 0.08, roughness: 0.13,
-  clearcoat: 1, clearcoatRoughness: 0.09, envMapIntensity: 0.9
+  color: 0x040405, metalness: 0.05, roughness: 0.09,
+  clearcoat: 1, clearcoatRoughness: 0.05, envMapIntensity: 1.15
 });
-const inkMat = () => new THREE.MeshBasicMaterial({ color: 0x0a0a0c, toneMapped: false });
+const inkMat = () => new THREE.MeshBasicMaterial({ color: 0x08080a, toneMapped: false });
 const deckMat = () => new THREE.MeshStandardMaterial({
-  color: 0x141417, metalness: 0.55, roughness: 0.52, envMapIntensity: 0.8
+  color: 0x17171b, metalness: 0.55, roughness: 0.48, envMapIntensity: 1.1
 });
 const keyMat = () => new THREE.MeshStandardMaterial({
-  color: 0x101013, metalness: 0.05, roughness: 0.66, envMapIntensity: 0.7
+  color: 0x141418, metalness: 0.05, roughness: 0.6, envMapIntensity: 1.0
 });
 const padMat = () => new THREE.MeshPhysicalMaterial({
-  color: 0x1d1d21, metalness: 0.4, roughness: 0.26,
-  clearcoat: 0.7, clearcoatRoughness: 0.2, envMapIntensity: 1.1
+  color: 0x191a1d, metalness: 0.4, roughness: 0.22,
+  clearcoat: 0.8, clearcoatRoughness: 0.16, envMapIntensity: 1.3
+});
+const lensMat = () => new THREE.MeshPhysicalMaterial({
+  color: 0x08080c, metalness: 0.2, roughness: 0.05,
+  clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 2.2
 });
 
 /* =============================================================== environment
-   A gradient dome plus a handful of emissive cards, prefiltered into a cubemap.
-   This is the whole difference between "aluminium" and "grey plastic".        */
+   A dark gradient dome with a few bright cards, prefiltered into a cubemap.
+   The narrow strips are what draw the long specular streaks down the chamfers;
+   the dome stays dark so the body itself does not lift off the black page.    */
 
 function studioEnvironment(renderer) {
   const scene = new THREE.Scene();
@@ -84,17 +96,16 @@ function studioEnvironment(renderer) {
   c.width = 8; c.height = 512;
   const g = c.getContext('2d');
   const lg = g.createLinearGradient(0, 0, 0, 512);
-  lg.addColorStop(0.00, '#ffffff');
-  lg.addColorStop(0.32, '#e9ecf1');
-  lg.addColorStop(0.49, '#9ea3ab');
-  lg.addColorStop(0.53, '#43454a');
-  lg.addColorStop(1.00, '#151618');
+  lg.addColorStop(0.00, '#c9cfd8');
+  lg.addColorStop(0.34, '#767b84');
+  lg.addColorStop(0.50, '#2b2d31');
+  lg.addColorStop(1.00, '#080809');
   g.fillStyle = lg;
   g.fillRect(0, 0, 8, 512);
   const tex = new THREE.CanvasTexture(c);
   tex.colorSpace = THREE.SRGBColorSpace;
   scene.add(new THREE.Mesh(
-    new THREE.SphereGeometry(70, 32, 24),
+    new THREE.SphereGeometry(80, 32, 24),
     new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide })
   ));
 
@@ -110,52 +121,28 @@ function studioEnvironment(renderer) {
     scene.add(m);
   };
 
-  card(5.0, 46, 26, [-5, 34, 14], [-70 * DEG, 0, 0]);   // key softbox, high front-left
-  card(1.9, 10, 50, [-40, 5, 4], [0, 90 * DEG, 0]);     // left strip
-  card(1.5, 8, 46, [40, 3, 0], [0, -90 * DEG, 0]);      // right strip
-  card(0.9, 64, 34, [0, 4, 48]);                        // fill from behind the camera
-  card(0.02, 40, 40, [16, -2, -34]);                    // negative fill, for edge contrast
+  card(7.5, 40, 20, [-6, 36, 16], [-68 * DEG, 0, 0]);   // key softbox, high front-left
+  card(9.0, 5, 66, [-31, 8, 10], [0, 90 * DEG, 0]);     // left strip — edge streak
+  card(7.0, 5, 60, [31, 6, 4], [0, -90 * DEG, 0]);      // right strip
+  card(3.2, 56, 6, [0, -15, 22], [72 * DEG, 0, 0]);     // low kicker, front chamfer
+  card(6.5, 6, 40, [-24, 7, 25], [0, 52 * DEG, 0]);      // 45° kickers: the streak
+  card(4.5, 6, 36, [25, 5, 24], [0, -52 * DEG, 0]);      //   down a turned rail
+  card(1.1, 60, 30, [0, 8, 52]);                        // gentle fill from the camera
 
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const env = pmrem.fromScene(scene, 0.02).texture;
+  const env = pmrem.fromScene(scene, 0.015).texture;
   pmrem.dispose();
   return env;
 }
 
-/* ============================================================ contact shadow
-   A soft pool under the device. It is a black quad with an alpha falloff drawn
-   over a transparent canvas, so it darkens the CSS panel underneath directly —
-   cheaper and softer than a shadow map, and it never shows a map's edge.      */
-
-function shadowPool() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 256;
-  const g = c.getContext('2d');
-  const rg = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-  rg.addColorStop(0.00, 'rgba(0,0,0,0.62)');
-  rg.addColorStop(0.35, 'rgba(0,0,0,0.34)');
-  rg.addColorStop(0.68, 'rgba(0,0,0,0.10)');
-  rg.addColorStop(1.00, 'rgba(0,0,0,0)');
-  g.fillStyle = rg;
-  g.fillRect(0, 0, 256, 256);
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  return new THREE.Mesh(
-    new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({
-      map: t, transparent: true, depthWrite: false, toneMapped: false
-    })
-  );
-}
-
 /* ================================================================== devices
-   Real dimensions, in centimetres. 14" laptop, 6.3" handset, 13" tablet.     */
+   Real dimensions, in centimetres.                                            */
 
 function buildLaptop() {
   const g = new THREE.Group();
   const W = 31.26, D = 22.12, H = 1.42, R = 1.05;
 
-  const base = new THREE.Mesh(slab(W, D, H, R, 0.17), shell(0x2b2b30));
+  const base = new THREE.Mesh(slab(W, D, H, R, 0.16), shell());
   base.rotation.x = -Math.PI / 2;
   base.position.y = H / 2;
   g.add(base);
@@ -166,6 +153,14 @@ function buildLaptop() {
   well.rotation.x = -Math.PI / 2;
   well.position.set(0, H + 0.004, wellZ);
   g.add(well);
+
+  /* speaker grilles either side of the keyboard */
+  [-1, 1].forEach((s) => {
+    const grille = new THREE.Mesh(panel(1.5, wellD - 0.6, 0.3, 6), deckMat());
+    grille.rotation.x = -Math.PI / 2;
+    grille.position.set(s * (wellW / 2 + 1.35), H + 0.003, wellZ);
+    g.add(grille);
+  });
 
   /* keycaps — one instanced mesh, laid out row by row from the back */
   const KH = 1.6, KW = 1.6, GAP = 0.15, PAD = 0.5;
@@ -195,143 +190,162 @@ function buildLaptop() {
   const keyGeo = slab(KW, KH, 0.15, 0.26, 0.045, 6);
   keyGeo.rotateX(-Math.PI / 2);
   const keys = new THREE.InstancedMesh(keyGeo, keyMat(), caps.length);
-  const m4 = new THREE.Matrix4();
-  const q = new THREE.Quaternion();
-  const p = new THREE.Vector3();
-  const s = new THREE.Vector3();
+  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion();
+  const p = new THREE.Vector3(), sc = new THREE.Vector3();
   caps.forEach((k, i) => {
     p.set(k.x, H + 0.078, k.z);
-    s.set(k.w / KW, 1, k.h / KH);
-    keys.setMatrixAt(i, m4.compose(p, q, s));
+    sc.set(k.w / KW, 1, k.h / KH);
+    keys.setMatrixAt(i, m4.compose(p, q, sc));
   });
   keys.instanceMatrix.needsUpdate = true;
   g.add(keys);
 
-  /* trackpad */
   const tp = new THREE.Mesh(panel(13.0, 8.2, 0.55, 12), padMat());
   tp.rotation.x = -Math.PI / 2;
   tp.position.set(0, H + 0.006, 6.2);
   g.add(tp);
 
-  /* feet */
   const footGeo = new THREE.CylinderGeometry(0.36, 0.36, 0.16, 14);
-  const footMat = new THREE.MeshStandardMaterial({ color: 0x090909, roughness: 0.85 });
+  const footMat = new THREE.MeshStandardMaterial({ color: 0x070708, roughness: 0.85 });
   [[-13, -9.3], [13, -9.3], [-13, 9.3], [13, 9.3]].forEach((f) => {
     const foot = new THREE.Mesh(footGeo, footMat);
     foot.position.set(f[0], -0.06, f[1]);
     g.add(foot);
   });
 
-  /* hinge */
   const hingeZ = -D / 2 + 0.66;
   const hinge = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.4, 0.4, W - 3.4, 18),
-    new THREE.MeshStandardMaterial({ color: 0x0d0d10, metalness: 0.6, roughness: 0.45 })
+    new THREE.CylinderGeometry(0.4, 0.4, W - 3.4, 20),
+    new THREE.MeshStandardMaterial({ color: 0x0b0b0d, metalness: 0.7, roughness: 0.38 })
   );
   hinge.rotation.z = Math.PI / 2;
   hinge.position.set(0, H - 0.2, hingeZ);
   g.add(hinge);
 
-  /* lid, hinged open a little past vertical */
+  /* lid, hinged a little past vertical */
   const pivot = new THREE.Group();
   pivot.position.set(0, H - 0.12, hingeZ);
-  pivot.rotation.x = -12.5 * DEG;
+  pivot.rotation.x = -13 * DEG;
   g.add(pivot);
 
   const LH = 20.9, LT = 0.44;
-  const lid = new THREE.Mesh(slab(W, LH, LT, R, 0.13), shell(0x2b2b30));
+  const lid = new THREE.Mesh(slab(W, LH, LT, R, 0.12), shell());
   lid.position.set(0, LH / 2, 0);
   pivot.add(lid);
 
-  const glass = new THREE.Mesh(panel(W - 0.34, LH - 0.34, R - 0.17), glassMat());
-  glass.position.set(0, LH / 2, LT / 2 + 0.012);
+  const glass = new THREE.Mesh(panel(W - 0.06, LH - 0.06, R - 0.03), glassMat());
+  glass.position.set(0, LH / 2, LT / 2 + 0.01);
   pivot.add(glass);
 
   const SW = 30.2, SH = SW * 900 / 1440, BOT = 1.275;
   const sy = BOT + SH / 2;
 
   const dead = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), inkMat());
-  dead.position.set(0, sy, LT / 2 + 0.02);
+  dead.position.set(0, sy, LT / 2 + 0.018);
   pivot.add(dead);
 
   const notch = new THREE.Mesh(panel(2.6, 0.7, 0.2, 6), inkMat());
-  notch.position.set(0, LH - 0.4, LT / 2 + 0.024);
+  notch.position.set(0, LH - 0.4, LT / 2 + 0.022);
   pivot.add(notch);
 
   const anchor = new THREE.Object3D();
-  anchor.position.set(0, sy, LT / 2 + 0.03);
+  anchor.position.set(0, sy, LT / 2 + 0.028);
   pivot.add(anchor);
 
-  g.userData.screen = { anchor: anchor, width: SW };
-  g.userData.shadow = { w: W * 1.85, d: 34, y: -0.4, o: 1 };
+  g.userData.screen = { anchor: anchor, width: SW, height: SH };
   return g;
 }
 
 function buildPhone() {
   const g = new THREE.Group();
-  const W = 7.15, H = 14.96, T = 0.83, R = 1.3;
+  /* 6.3" handset: 70.6 × 146.6 × 8.3 mm, 2.8 mm bezels */
+  const W = 7.06, H = 14.66, T = 0.83, R = 1.24;
 
-  const body = new THREE.Mesh(slab(W, H, T, R, 0.12, 22), shell(0x32323a));
+  const body = new THREE.Mesh(slab(W, H, T, R, 0.11, 26), shell());
   g.add(body);
 
-  const glass = new THREE.Mesh(panel(W - 0.03, H - 0.03, R - 0.015, 20), glassMat());
-  glass.position.z = T / 2 + 0.008;
+  /* the rail reads as a separate finish on a real handset */
+  const rail = new THREE.Mesh(slab(W + 0.02, H + 0.02, T * 0.52, R, 0.09, 26), band());
+  g.add(rail);
+
+  const glass = new THREE.Mesh(panel(W - 0.03, H - 0.03, R - 0.015, 22), glassMat());
+  glass.position.z = T / 2 + 0.007;
   g.add(glass);
 
-  const SW = 6.37, SH = SW * 1690 / 780;
+  const SW = 6.50, SH = SW * 1690 / 780;
   const dead = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), inkMat());
-  dead.position.z = T / 2 + 0.014;
+  dead.position.z = T / 2 + 0.012;
   g.add(dead);
 
-  /* rail buttons — the detail that reads at a glancing angle */
+  /* buttons — the detail that reads at a glancing angle */
   const btnMat = new THREE.MeshStandardMaterial({
-    color: 0x35353a, metalness: 0.9, roughness: 0.34
+    color: 0x2c2c31, metalness: 0.95, roughness: 0.22
   });
-  const rail = (x, y, len) => {
-    const b = new THREE.Mesh(slab(0.16, len, 0.3, 0.07, 0.03, 6), btnMat);
+  const button = (x, y, len) => {
+    const b = new THREE.Mesh(slab(0.14, len, 0.3, 0.06, 0.025, 6), btnMat);
     b.position.set(x, y, 0);
     g.add(b);
   };
-  rail(-W / 2 - 0.02, 3.9, 0.9);   // action button
-  rail(-W / 2 - 0.02, 2.2, 1.5);   // volume up
-  rail(-W / 2 - 0.02, 0.4, 1.5);   // volume down
-  rail(W / 2 + 0.02, 2.6, 2.1);    // side button
+  button(-W / 2 - 0.015, 4.0, 0.85);   // action button
+  button(-W / 2 - 0.015, 2.3, 1.5);    // volume up
+  button(-W / 2 - 0.015, 0.5, 1.5);    // volume down
+  button(W / 2 + 0.015, 2.7, 2.1);     // side button
+
+  /* camera plateau on the back, so a turn of the device has something to show */
+  const plate = new THREE.Mesh(slab(3.7, 3.7, 0.22, 1.0, 0.07, 14), shell());
+  plate.position.set(-W / 2 + 2.25, H / 2 - 2.35, -T / 2 - 0.1);
+  g.add(plate);
+  [[-0.85, 0.85], [0.85, 0.85], [0, -0.9]].forEach((o) => {
+    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.2, 24), band());
+    ring.rotation.x = Math.PI / 2;
+    ring.position.set(plate.position.x + o[0], plate.position.y + o[1], -T / 2 - 0.2);
+    g.add(ring);
+    const lens = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.22, 24), lensMat());
+    lens.rotation.x = Math.PI / 2;
+    lens.position.copy(ring.position);
+    lens.position.z -= 0.02;
+    g.add(lens);
+  });
 
   const anchor = new THREE.Object3D();
-  anchor.position.z = T / 2 + 0.02;
+  anchor.position.z = T / 2 + 0.018;
   g.add(anchor);
 
-  g.userData.screen = { anchor: anchor, width: SW };
-  g.userData.shadow = { w: W * 4.6, d: 12, y: -H / 2 - 0.6, o: 0.9 };
+  g.userData.screen = { anchor: anchor, width: SW, height: SH };
   return g;
 }
 
 function buildTablet() {
   const g = new THREE.Group();
-  const W = 28.15, H = 21.51, T = 0.53, R = 1.65;
+  /* 13" tablet, landscape: 281.6 × 215.5 × 5.1 mm */
+  const W = 28.16, H = 21.55, T = 0.51, R = 1.62;
 
-  const body = new THREE.Mesh(slab(W, H, T, R, 0.09, 20), shell(0x2d2d33));
+  const body = new THREE.Mesh(slab(W, H, T, R, 0.08, 22), shell());
   g.add(body);
 
-  const glass = new THREE.Mesh(panel(W - 0.03, H - 0.03, R - 0.015, 18), glassMat());
-  glass.position.z = T / 2 + 0.007;
+  const glass = new THREE.Mesh(panel(W - 0.03, H - 0.03, R - 0.015, 20), glassMat());
+  glass.position.z = T / 2 + 0.006;
   g.add(glass);
 
-  const SW = 26.4, SH = SW * 1200 / 1600;
+  const SW = 26.47, SH = SW * 1200 / 1600;
   const dead = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), inkMat());
-  dead.position.z = T / 2 + 0.012;
+  dead.position.z = T / 2 + 0.011;
   g.add(dead);
 
-  const cam = new THREE.Mesh(new THREE.CircleGeometry(0.13, 16), inkMat());
-  cam.position.set(0, H / 2 - 0.44, T / 2 + 0.014);
+  const cam = new THREE.Mesh(new THREE.CircleGeometry(0.12, 18), inkMat());
+  cam.position.set(0, H / 2 - 0.42, T / 2 + 0.013);
   g.add(cam);
 
+  const camBack = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.14, 24), band());
+  camBack.rotation.x = Math.PI / 2;
+  camBack.position.set(-W / 2 + 1.9, H / 2 - 1.9, -T / 2 - 0.06);
+  g.add(camBack);
+
   const anchor = new THREE.Object3D();
-  anchor.position.z = T / 2 + 0.02;
+  anchor.position.z = T / 2 + 0.017;
   g.add(anchor);
 
-  g.userData.screen = { anchor: anchor, width: SW };
-  g.userData.shadow = { w: W * 1.55, d: 24, y: -H / 2 - 0.5, o: 0.95 };
+  g.userData.screen = { anchor: anchor, width: SW, height: SH };
   return g;
 }
 
@@ -343,6 +357,7 @@ export function initCapabilities() {
   const capx = document.getElementById('capx');
   const stage = document.getElementById('capstage');
   const list = document.getElementById('caplist');
+  const rail = document.getElementById('caprail');
   const dotsEl = document.getElementById('capdots');
   const prevBtn = document.getElementById('capprev');
   const nextBtn = document.getElementById('capnext');
@@ -350,6 +365,19 @@ export function initCapabilities() {
 
   const items = Array.prototype.slice.call(list.querySelectorAll('.capx-item'));
   if (!items.length) return;
+
+  /* consecutive items on the same device become one group */
+  const groups = [];
+  items.forEach((li) => {
+    const kind = li.getAttribute('data-device') || 'laptop';
+    let g = groups[groups.length - 1];
+    if (!g || g.kind !== kind) { g = { kind: kind, screens: [], active: 0 }; groups.push(g); }
+    g.screens.push({
+      li: li,
+      el: li.querySelector('[data-scr]'),
+      tab: li.getAttribute('data-tab') || (li.querySelector('h3') || {}).textContent || ''
+    });
+  });
 
   let renderer;
   try {
@@ -359,12 +387,11 @@ export function initCapabilities() {
   } catch (e) {
     return;                                  // no GPU — the flat mockups stay
   }
-  if (!renderer.getContext()) return;
 
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.02;
+  renderer.toneMappingExposure = 1.05;
   renderer.setClearAlpha(0);
   renderer.domElement.className = 'capx-gl';
   stage.insertBefore(renderer.domElement, stage.firstChild);
@@ -375,82 +402,90 @@ export function initCapabilities() {
 
   const scene = new THREE.Scene();
   scene.environment = studioEnvironment(renderer);
-  scene.environmentIntensity = 1.0;
 
-  const key = new THREE.DirectionalLight(0xffffff, 1.5);
-  key.position.set(-14, 26, 22);
+  /* the environment does nearly all the work on metal; these only lift the
+     non-metal parts — keycaps, the deck, the rubber feet */
+  const key = new THREE.DirectionalLight(0xffffff, 1.9);
+  key.position.set(-12, 26, 20);
   scene.add(key);
-  const fill = new THREE.DirectionalLight(0xdce6f5, 0.55);
-  fill.position.set(20, 6, 14);
-  scene.add(fill);
-  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+  scene.add(new THREE.AmbientLight(0xffffff, 0.1));
 
   const camera = new THREE.PerspectiveCamera(24, 1.6, 1, 400);
-
   const rig = new THREE.Group();
   scene.add(rig);
 
   const SPREAD = 58;
 
-  /* ------------------------------------------------------- one per capability */
-  const slides = items.map((li, i) => {
-    const kind = li.getAttribute('data-device') || 'laptop';
-    const group = (BUILD[kind] || buildLaptop)();
+  groups.forEach((grp, i) => {
+    const group = (BUILD[grp.kind] || buildLaptop)();
 
-    /* recentre on the bounding box so framing maths is the same for every kind */
     const box = new THREE.Box3().setFromObject(group);
     const centre = box.getCenter(new THREE.Vector3());
-    group.position.set(-centre.x, -centre.y, -centre.z);
-    const size = box.getSize(new THREE.Vector3());
+    const scr = group.userData.screen;
+
+    /* Two framings. Wide: the whole body, centred on its bounding box. Narrow:
+       centred on the screen and cropped to it — a 14" laptop drawn 300px across
+       cannot show its base AND a legible screen, and the screen is the point. */
+    group.updateMatrixWorld(true);
+    const anchorAt = scr.anchor.getWorldPosition(new THREE.Vector3());
+    grp.wide = {
+      offset: new THREE.Vector3(-centre.x, -centre.y, -centre.z),
+      size: box.getSize(new THREE.Vector3())
+    };
+    grp.tight = {
+      offset: new THREE.Vector3(-anchorAt.x, -anchorAt.y, -centre.z),
+      size: new THREE.Vector3(scr.width * 1.06, scr.height * 1.12, 2)
+    };
+    grp.frame = grp.wide;
+    grp.cy = centre.y;
+    grp.group = group;
 
     const holder = new THREE.Group();
     holder.position.x = i * SPREAD;
     holder.add(group);
     rig.add(holder);
+    grp.holder = holder;
 
-    const sh = group.userData.shadow;
-    const pool = shadowPool();
-    pool.rotation.x = -Math.PI / 2;
-    pool.scale.set(sh.w, sh.d, 1);
-    pool.position.set(0, sh.y - centre.y - 0.6, -centre.z);
-    pool.material.opacity = sh.o;
-    holder.add(pool);
-
-    /* the interface: real DOM, sized in CSS, scaled into world centimetres */
-    const el = li.querySelector('[data-scr]');
-    let css = null;
-    if (el) {
-      const cs = getComputedStyle(el);
-      const pxW = parseFloat(cs.getPropertyValue('--sw'));
-      if (pxW > 0) {
-        css = new CSS3DObject(el);
-        css.scale.setScalar(group.userData.screen.width / pxW);
-        group.userData.screen.anchor.add(css);
-      }
-    }
-
-    return { kind: kind, group: group, holder: holder, size: size, css: css, el: el, li: li };
+    const anchor = group.userData.screen.anchor;
+    grp.screens.forEach((s) => {
+      if (!s.el) return;
+      const pxW = parseFloat(getComputedStyle(s.el).getPropertyValue('--sw'));
+      if (!(pxW > 0)) return;
+      s.css = new CSS3DObject(s.el);
+      s.css.scale.setScalar(group.userData.screen.width / pxW);
+      anchor.add(s.css);
+    });
   });
 
-  /* --------------------------------------------------------------- framing
-     A closed-form fit is wrong here: the camera looks down, so the body's depth
-     projects into the vertical extent and a laptop gets its base cropped. Solve
-     it numerically instead — project the eight corners and pull back until the
-     widest one sits at the target fraction of the frame. */
+  /* --------------------------------------------------------------- framing */
+  const CAM = { laptop: 0.36, phone: 0.07, tablet: 0.13 };
+  const CAM_NARROW = { laptop: 0.17, phone: 0.04, tablet: 0.07 };
+  /* Resting three-quarter. A handset seen dead-on is a white rectangle with a
+     hairline border; turned, the rail catches the strip light and the object
+     acquires an edge. */
+  const YAW = { laptop: 0.05, phone: 0.26, tablet: 0.15 };
+  const PITCH = { laptop: 0, phone: -0.05, tablet: -0.04 };
+
+  const narrow = () => stage.clientWidth < 720;
   const probe = new THREE.PerspectiveCamera();
   const corner = new THREE.Vector3();
 
-  /* on a phone the stage is the only thing on screen, so fill it almost to the
-     edge — that is what buys the on-screen copy enough pixels to be readable. */
-  const narrow = () => stage.clientWidth < 720;
-
-  function fitDistance(size, liftFrac) {
-    const fill = narrow() ? 0.95 : 0.87;
-    probe.fov = camera.fov;
-    probe.aspect = camera.aspect;
-    probe.near = camera.near;
-    probe.far = camera.far;
-    const hx = size.x / 2, hy = size.y / 2, hz = size.z / 2;
+  /* A closed-form fit is wrong here: the camera looks down, so the body's depth
+     projects into the vertical extent and a laptop gets its base cropped. Solve
+     it numerically — project the eight corners and pull back until the widest
+     one sits at the target fill. */
+  function fitDistance(size, liftFrac, kind) {
+    const n = narrow();
+    const fill = n ? 0.99 : 0.88;
+    probe.fov = camera.fov; probe.aspect = camera.aspect;
+    probe.near = camera.near; probe.far = camera.far;
+    /* the device turns with the scroll and the pointer, which widens what the
+       frame has to hold — fit the swept envelope, not the resting box */
+    const yaw = Math.abs(YAW[kind] || 0) + 0.13 + (n ? 0 : 0.16);
+    const cy = Math.cos(yaw), sy = Math.sin(yaw);
+    const hx = (size.x * cy + size.z * sy) / 2;
+    const hy = size.y / 2;
+    const hz = (size.z * cy + size.x * sy) / 2;
     let d = Math.max(size.x, size.y, size.z) * 3;
     for (let it = 0; it < 12; it++) {
       probe.position.set(0, size.y * liftFrac, d);
@@ -469,36 +504,32 @@ export function initCapabilities() {
     }
     return d;
   }
-  /* `lift` is how far the camera rises, as a fraction of the object height —
-     the laptop needs a slight plunge or the deck is edge-on and unreadable. */
-  const CAM = { laptop: 0.38, phone: 0.08, tablet: 0.14 };
-  /* flatter on a phone: a plunging camera spends screen area on the keyboard */
-  const CAM_NARROW = { laptop: 0.18, phone: 0.04, tablet: 0.07 };
 
-  let index = 0;
-  let virt = 0;
-  let framed = false;
+  /* how far the camera rises, as a fraction of the object height — the laptop
+     needs a slight plunge or the deck is edge-on and unreadable */
+
+  let dev = 0, virt = 0, framed = false;
   let dist = 60, distTarget = 60;
   let lift = 0, liftTarget = 0;
-  let lookY = 0, lookTarget = 0;
 
   function retarget() {
-    const s = slides[index];
-    const table = narrow() ? CAM_NARROW : CAM;
-    const f = table[s.kind] != null ? table[s.kind] : table.laptop;
-    distTarget = fitDistance(s.size, f);
-    liftTarget = s.size.y * f;
-    lookTarget = 0;
-    if (!framed) {                 /* first pass: open already framed, no zoom-in */
-      framed = true;
-      dist = distTarget; lift = liftTarget; lookY = lookTarget;
-    }
-      }
+    const n = narrow();
+    groups.forEach((grp) => {
+      const m = n ? grp.tight : grp.wide;
+      grp.group.position.copy(m.offset);
+      grp.cy = -m.offset.y;
+      grp.frame = m;
+    });
+    const g = groups[dev];
+    const table = n ? CAM_NARROW : CAM;
+    const f = table[g.kind] != null ? table[g.kind] : table.laptop;
+    distTarget = fitDistance(g.frame.size, f, g.kind);
+    liftTarget = g.frame.size.y * f;
+    if (!framed) { framed = true; dist = distTarget; lift = liftTarget; }
+  }
 
-  /* ----------------------------------------------------------------- sizing */
   function resize() {
-    const w = stage.clientWidth;
-    const h = stage.clientHeight;
+    const w = stage.clientWidth, h = stage.clientHeight;
     if (!w || !h) return;
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -507,122 +538,159 @@ export function initCapabilities() {
     retarget();
   }
 
-  /* ------------------------------------------------------------- navigation */
+  /* ------------------------------------------------------------ the two axes */
+  function paintRail() {
+    if (!rail) return;
+    rail.textContent = '';
+    const g = groups[dev];
+    if (g.screens.length < 2) {
+      const label = document.createElement('span');
+      label.className = 'solo';
+      label.textContent = g.screens[0].tab;
+      rail.appendChild(label);
+      return;
+    }
+    g.screens.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'capx-tab';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', i === g.active ? 'true' : 'false');
+      b.innerHTML = s.tab;
+      b.addEventListener('click', () => { g.active = i; paintRail(); paintScreens(); });
+      rail.appendChild(b);
+    });
+  }
+
+  function paintScreens() {
+    groups.forEach((g, gi) => {
+      g.screens.forEach((s, si) => {
+        if (!s.el) return;
+        const inGroup = gi === dev;
+        const on = inGroup && si === g.active;
+        if (s.css) s.css.visible = inGroup || Math.abs(gi - virt) < 1.35;
+        s.el.classList.toggle('on', on);
+        s.el.setAttribute('aria-hidden', on ? 'false' : 'true');
+        if (on) s.el.removeAttribute('inert'); else s.el.setAttribute('inert', '');
+      });
+    });
+  }
+
   const dots = [];
   if (dotsEl) {
     dotsEl.textContent = '';
-    slides.forEach((s, i) => {
+    groups.forEach((g, i) => {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'capx-dot';
-      b.setAttribute('role', 'tab');
-      const title = s.li.querySelector('h3');
-      b.setAttribute('aria-label', title ? title.textContent.trim() : 'Capability ' + (i + 1));
-      b.addEventListener('click', () => go(i));
+      b.setAttribute('aria-label', 'Show the ' + g.kind);
+      b.addEventListener('click', () => goDevice(i));
       dotsEl.appendChild(b);
       dots.push(b);
     });
   }
 
-  function sync() {
-    dots.forEach((d, i) => {
-      d.classList.toggle('on', i === index);
-      d.setAttribute('aria-selected', i === index ? 'true' : 'false');
-    });
-    slides.forEach((s, i) => {
-      if (!s.el) return;
-      const on = i === index;
-      s.el.setAttribute('aria-hidden', on ? 'false' : 'true');
-      if (on) s.el.removeAttribute('inert'); else s.el.setAttribute('inert', '');
-    });
-  }
-
-  function go(i) {
-    index = (i % slides.length + slides.length) % slides.length;
+  function goDevice(i) {
+    dev = (i % groups.length + groups.length) % groups.length;
     retarget();
-    sync();
+    dots.forEach((d, k) => d.classList.toggle('on', k === dev));
+    paintRail();
+    paintScreens();
   }
 
-  if (prevBtn) prevBtn.addEventListener('click', () => go(index - 1));
-  if (nextBtn) nextBtn.addEventListener('click', () => go(index + 1));
+  if (prevBtn) prevBtn.addEventListener('click', () => goDevice(dev - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goDevice(dev + 1));
 
-  /* ------------------------------------------------------------ pointer look */
+  /* -------------------------------------------------------------- pointer
+     Capture only once a drag is real. Capturing on pointerdown retargets the
+     pointerup to the stage, and the arrows never see their click. */
   let px = 0, py = 0, tx = 0, ty = 0;
-  let dragging = false, dragX = 0, dragged = 0;
+  let dragging = false, captured = false, dragX = 0, dragged = 0;
 
   stage.addEventListener('pointermove', (e) => {
     const r = stage.getBoundingClientRect();
     tx = ((e.clientX - r.left) / r.width - 0.5) * 2;
     ty = ((e.clientY - r.top) / r.height - 0.5) * 2;
-    if (dragging) dragged = e.clientX - dragX;
+    if (!dragging) return;
+    dragged = e.clientX - dragX;
+    if (!captured && Math.abs(dragged) > 10) {
+      captured = true;
+      if (stage.setPointerCapture) { try { stage.setPointerCapture(e.pointerId); } catch (err) {} }
+    }
   });
   stage.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
   stage.addEventListener('pointerdown', (e) => {
-    dragging = true; dragX = e.clientX; dragged = 0;
-    if (stage.setPointerCapture) { try { stage.setPointerCapture(e.pointerId); } catch (err) {} }
+    if (e.target.closest && e.target.closest('button,a')) return;
+    dragging = true; captured = false; dragX = e.clientX; dragged = 0;
   });
   stage.addEventListener('pointerup', () => {
-    if (dragging && Math.abs(dragged) > 48) go(index + (dragged < 0 ? 1 : -1));
-    dragging = false;
+    if (captured && Math.abs(dragged) > 44) goDevice(dev + (dragged < 0 ? 1 : -1));
+    dragging = false; captured = false;
   });
-  stage.addEventListener('pointercancel', () => { dragging = false; });
+  stage.addEventListener('pointercancel', () => { dragging = false; captured = false; });
 
-  /* --------------------------------------------------------------- keyboard */
+  /* -------------------------------------------------------------- keyboard */
   let onScreen = false;
   document.addEventListener('keydown', (e) => {
     if (!onScreen) return;
     const t = e.target;
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-    if (e.key === 'ArrowLeft') { go(index - 1); e.preventDefault(); }
-    else if (e.key === 'ArrowRight') { go(index + 1); e.preventDefault(); }
+    if (t && t.classList && t.classList.contains('capx-tab')) return;
+    if (e.key === 'ArrowLeft') { goDevice(dev - 1); e.preventDefault(); }
+    else if (e.key === 'ArrowRight') { goDevice(dev + 1); e.preventDefault(); }
   });
+
+  /* ------------------------------------------------- scroll drives the turn */
+  let turn = 0;
+  function readScroll() {
+    const r = stage.getBoundingClientRect();
+    const p = (window.innerHeight - r.top) / (window.innerHeight + r.height);
+    turn = Math.max(0, Math.min(1, p)) * 2 - 1;         /* -1 … 1 */
+  }
+  window.addEventListener('scroll', readScroll, { passive: true });
+  readScroll();
 
   /* ------------------------------------------------------------------- loop */
   const clock = new THREE.Clock();
-  let running = false;
-  let t = 0;
+  let running = false, t = 0;
 
   function frame() {
     if (!running) return;
     requestAnimationFrame(frame);
 
-    /* time-based smoothing, so a 120 Hz display does not glide twice as fast */
+    /* time-based, so a 120 Hz display does not glide twice as fast */
     const dt = Math.min(0.05, clock.getDelta());
     t += dt;
     const k = 1 - Math.exp(-dt * 5.6);
     const kp = 1 - Math.exp(-dt * 3.6);
 
-    virt += (index - virt) * k;
+    virt += (dev - virt) * k;
     dist += (distTarget - dist) * k;
     lift += (liftTarget - lift) * k;
-    lookY += (lookTarget - lookY) * k;
     px += (tx - px) * kp;
     py += (ty - py) * kp;
 
     rig.position.x = -virt * SPREAD;
     camera.position.set(0, lift, dist);
-    camera.lookAt(0, lookY, 0);
+    camera.lookAt(0, 0, 0);
 
-    slides.forEach((s, i) => {
+    groups.forEach((grp, i) => {
       const off = Math.abs(i - virt);
       const near = off < 1.35;
-      if (s.holder.visible !== near) s.holder.visible = near;
-      if (s.css && s.css.visible !== near) s.css.visible = near;
+      if (grp.holder.visible !== near) grp.holder.visible = near;
       if (!near) return;
-      const g = s.group;
-      g.position.y = -g.userData.cy + Math.sin(t * 0.62 + i) * 0.5;
-      g.rotation.y = px * 0.2 - (i - virt) * 0.34;
-      g.rotation.x = py * 0.09 + Math.sin(t * 0.48 + i) * 0.008;
+      const g = grp.group;
+      g.position.y = -grp.cy + Math.sin(t * 0.55 + i) * 0.42;
+      const ry = YAW[grp.kind] != null ? YAW[grp.kind] : 0;
+      const rx = PITCH[grp.kind] != null ? PITCH[grp.kind] : 0;
+      g.rotation.y = ry + px * 0.16 + turn * 0.13 - (i - virt) * 0.3;
+      g.rotation.x = rx + py * 0.07 - turn * 0.035 + Math.sin(t * 0.42 + i) * 0.007;
     });
 
     renderer.render(scene, camera);
     cssRenderer.render(scene, camera);
   }
 
-  /* the float offsets the recentring, so remember where each body started */
-  slides.forEach((s) => { s.group.userData.cy = -s.group.position.y; });
-
-  /* ------------------------------------------- only run while it is on screen */
   if ('IntersectionObserver' in window) {
     const io = new IntersectionObserver((es) => {
       onScreen = es[0].isIntersecting;
@@ -631,7 +699,7 @@ export function initCapabilities() {
     }, { rootMargin: '160px 0px' });
     io.observe(stage);
   } else {
-    onScreen = true; running = true; frame();
+    onScreen = true; running = true;
   }
 
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(stage);
@@ -639,14 +707,16 @@ export function initCapabilities() {
 
   capx.classList.add('is-3d');
   resize();
-  sync();
+  goDevice(0);
+
   /* one pass with everything visible so every screen element is moved into the
-     CSS layer up front — otherwise four of the six sit in a hidden list until
-     they are first navigated to. */
-  slides.forEach((s) => { s.holder.visible = true; });
+     CSS layer up front, instead of sitting in a hidden list until navigated to */
+  groups.forEach((g) => { g.holder.visible = true; });
   camera.position.set(0, lift, dist);
-  camera.lookAt(0, lookY, 0);
+  camera.lookAt(0, 0, 0);
   camera.updateMatrixWorld(true);
   cssRenderer.render(scene, camera);
+  paintScreens();
+
   if (!running) { running = true; frame(); }
 }
