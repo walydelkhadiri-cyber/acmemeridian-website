@@ -181,24 +181,68 @@ p{margin:0 0 1.1em}
                 color:var(--t3);max-width:46ch;margin-top:2rem}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,6rem);align-items:start}
 
-/* ---------------------------------------------------------------- capabilities */
-.cap{display:block;border-top:1px solid var(--line);position:relative;isolation:isolate}
-.cap:last-of-type{border-bottom:1px solid var(--line)}
-.cap-in{display:grid;grid-template-columns:5.5rem minmax(0,1fr) minmax(0,1.15fr) 3rem;
-        gap:clamp(1rem,3vw,2.5rem);align-items:baseline;
-        padding-block:clamp(1.8rem,3.4vw,2.9rem);transition:padding-left .6s var(--ease)}
-.cap:hover .cap-in{padding-left:clamp(.6rem,1.6vw,1.6rem)}
-.cap::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--line-soft);
-             transform:scaleY(0);transform-origin:bottom;transition:transform .55s var(--ease)}
-.cap:hover::before{transform:scaleY(1);transform-origin:top}
-.cap-num{font-size:.72rem;letter-spacing:.2em;color:var(--t4);
-         font-variant-numeric:tabular-nums;transition:color .5s var(--ease)}
-.cap:hover .cap-num{color:var(--t1)}
-.cap h3{transition:transform .6s var(--ease)}
-.cap p{color:var(--t3);margin:0;font-size:.95rem;line-height:1.66}
-.cap-ar{justify-self:end;color:var(--t4);opacity:0;transform:translateX(-8px);
-        transition:opacity .5s var(--ease),transform .5s var(--ease)}
-.cap:hover .cap-ar{opacity:1;transform:none;color:var(--t1)}
+/* ---------------------------------------------------------------- capabilities
+   The six items ship as a plain list. When WebGL is up, `.is-3d` collapses it to
+   one item at a time beside the device stage; without it the list stays a list. */
+.capx{display:grid;gap:clamp(1.6rem,3.4vw,3.4rem)}
+.capx:focus-visible{outline:2px solid var(--t1);outline-offset:14px;border-radius:8px}
+
+.capx-stage{display:none;position:relative;aspect-ratio:5/4;width:100%;
+            min-height:300px;touch-action:pan-y}
+.is-3d .capx-stage{display:block}
+.capx-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;
+             display:block;cursor:grab}
+.capx-canvas:active{cursor:grabbing}
+.capx-stage::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 62% 50% at 50% 62%,rgba(255,255,255,.05),transparent 70%)}
+
+.capx-arrow{position:absolute;top:50%;translate:0 -50%;z-index:2;
+  width:clamp(38px,4vw,46px);aspect-ratio:1;border-radius:50%;
+  border:1px solid var(--line);background:rgba(11,11,11,.5);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  color:var(--t3);display:none;place-items:center;cursor:pointer;padding:0;
+  transition:color .35s var(--ease),border-color .35s var(--ease),background .35s var(--ease)}
+.is-3d .capx-arrow{display:grid}
+.capx-arrow svg{width:52%;height:52%}
+.capx-arrow:hover{color:var(--t1);border-color:var(--t4);background:rgba(11,11,11,.75)}
+.capx-arrow:focus-visible{outline:2px solid var(--t1);outline-offset:3px}
+.capx-arrow.prev{left:0}
+.capx-arrow.next{right:0}
+.capx-arrow.next svg{rotate:180deg}
+
+.capx-list{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.capx-item{border-top:1px solid var(--line);padding-block:clamp(1.4rem,2.6vw,2rem)}
+.capx-item:last-child{border-bottom:1px solid var(--line)}
+.capx-item .cap-num{display:block;font-size:.72rem;letter-spacing:.2em;color:var(--t4);
+                    font-variant-numeric:tabular-nums;margin-bottom:.7rem}
+.capx-item h3{margin-bottom:.6rem}
+.capx-item p{color:var(--t3);margin:0;font-size:.95rem;line-height:1.66;max-width:52ch}
+
+/* carousel mode: one item at a time, no rules, cross-faded */
+.is-3d .capx-list{display:grid;align-content:center;min-height:13rem}
+.is-3d .capx-item{grid-area:1/1;border:0;padding:0;opacity:0;transform:translateY(14px);
+  pointer-events:none;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.is-3d .capx-item.on{opacity:1;transform:none;pointer-events:auto}
+.is-3d .capx-item h3{font-size:clamp(1.6rem,2.6vw,2.3rem)}
+
+.capx-foot{display:flex;align-items:center;justify-content:space-between;
+           flex-wrap:wrap;gap:1.2rem}
+.capx-dots{display:none;gap:.55rem}
+.is-3d .capx-dots{display:flex}
+.capx-dot{width:26px;height:2px;border:0;padding:0;cursor:pointer;border-radius:2px;
+          background:var(--line);transition:background .4s var(--ease)}
+.capx-dot:hover{background:var(--t4)}
+.capx-dot.on{background:var(--t1)}
+.capx-dot:focus-visible{outline:2px solid var(--t1);outline-offset:4px}
+
+@media (min-width:900px){
+  .is-3d.capx{grid-template-columns:1.08fr .92fr;
+              grid-template-areas:"stage text" "stage foot";
+              align-items:center;column-gap:clamp(2rem,4vw,4.5rem)}
+  .is-3d .capx-stage{grid-area:stage;aspect-ratio:1/1;min-height:420px}
+  .is-3d .capx-list{grid-area:text}
+  .is-3d .capx-foot{grid-area:foot;align-self:end;justify-content:flex-start;gap:2rem}
+}
 
 /* ---------------------------------------------------------------- process */
 .proc{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
@@ -291,9 +335,6 @@ p{margin:0 0 1.1em}
 /* ---------------------------------------------------------------- responsive */
 @media (max-width:900px){
   .split{grid-template-columns:1fr}
-  .cap-in{grid-template-columns:3.2rem 1fr;row-gap:.6rem}
-  .cap-in p{grid-column:2}
-  .cap-ar{display:none}
   .nav-links{display:none}
   .nav .btn{display:none}          /* wraps to two lines at this width; the menu covers it */
   .nav-links.open{display:flex;position:fixed;inset:0;background:rgba(11,11,11,.985);

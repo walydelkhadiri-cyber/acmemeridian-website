@@ -136,6 +136,26 @@
     }
   }
 
+  /* ------------------------------------------------------- capabilities 3D
+     Three.js is heavy, so it is fetched only once the section is within reach
+     and never on a reduced-motion request — the plain list is the fallback. */
+  var capx = $('#capx');
+  if (capx && !reduced) {
+    var loadCaps = function () {
+      import('/assets/capabilities.js')
+        .then(function (m) { m.initCapabilities(); })
+        .catch(function (err) {          // the plain list stays; say why
+          if (window.console) console.warn('[capabilities] 3D disabled:', err);
+        });
+    };
+    if ('IntersectionObserver' in window) {
+      var capIo = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { capIo.disconnect(); loadCaps(); }
+      }, { rootMargin: '700px 0px' });
+      capIo.observe(capx);
+    } else { loadCaps(); }
+  }
+
   /* ------------------------------------------------------------ meridian field
      Vertical arcs that bow like lines of longitude and part around the pointer.
      One canvas, no library; it parks itself the moment the hero scrolls away. */
