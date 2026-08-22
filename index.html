@@ -121,57 +121,157 @@
 <section class="section" id="capabilities">
   <div class="wrap">
     <p class="eyebrow" data-reveal>Capabilities</p>
-    <h2 data-reveal data-d="1" style="max-width:14ch;margin-bottom:clamp(2.5rem,5vw,4rem)">
+    <h2 data-reveal data-d="1" style="max-width:14ch;margin-bottom:clamp(2rem,4vw,3rem)">
       What we build</h2>
+  </div>
 
-    <div class="capx" id="capx" data-reveal data-d="2">
-      <div class="capx-stage" id="capstage">
-        <button class="capx-arrow prev" id="capprev" type="button"
-                aria-label="Previous capability"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        <button class="capx-arrow next" id="capnext" type="button"
-                aria-label="Next capability"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <div class="capx" id="capx" data-reveal data-d="2">
+    <div class="capx-stage" id="capstage">
+      <button class="capx-arrow prev" id="capprev" type="button" aria-label="Previous capability"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4L7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="capx-arrow next" id="capnext" type="button" aria-label="Next capability"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 4L7 12l8 8" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+
+    <ol class="capx-list" id="caplist">
+
+    <li class="capx-item" data-device="laptop">
+      <div class="scr scr--mac" data-scr>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span>
+            <span class="win-title">acme-meridian &nbsp;·&nbsp; main</span></div>
+          <div class="win-body ide">
+            <div class="ide-side">
+              <span class="ide-f on">README.md</span>
+              <span class="ide-f">core/engine.ts</span>
+              <span class="ide-f">core/ledger.ts</span>
+              <span class="ide-f">api/routes.ts</span>
+              <span class="ide-f">infra/deploy.tf</span>
+            </div>
+            <div class="ide-main">
+              <span class="scr-num">01</span>
+              <h3>Custom Software Development</h3>
+              <p>Bespoke systems built around your operation instead of a template. Architecture, engineering and long-term ownership, by the people who wrote it.</p>
+              <div class="code">
+                <div class="ln"><b>export class</b> Ledger {</div>
+                <div class="ln">&nbsp;&nbsp;post(entry: Entry) {</div>
+                <div class="ln">&nbsp;&nbsp;&nbsp;&nbsp;<b>return</b> this.commit(entry)</div>
+                <div class="ln">&nbsp;&nbsp;}</div>
+                <div class="ln">}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </li>
 
-      <ol class="capx-list" id="caplist">
-      <li class="capx-item" data-device="laptop" data-screen="code">
-        <span class="cap-num">01</span>
-        <h3>Custom Software Development</h3>
-        <p>Bespoke systems built around your operation instead of a template. Architecture, engineering and long-term ownership, by the people who wrote it.</p>
-      </li>
-      <li class="capx-item" data-device="laptop" data-screen="web">
-        <span class="cap-num">02</span>
-        <h3>Web Platforms</h3>
-        <p>Sites, portals and commerce that load instantly, rank, and convert. Designed and engineered in-house — no handoff between a designer and a dev shop.</p>
-      </li>
-      <li class="capx-item" data-device="phone" data-screen="app">
-        <span class="cap-num">03</span>
-        <h3>Mobile Applications</h3>
-        <p>Native iOS and Android apps, designed and engineered in-house — through store review, subscriptions and the release cadence that comes after launch.</p>
-      </li>
-      <li class="capx-item" data-device="laptop" data-screen="dash">
-        <span class="cap-num">04</span>
-        <h3>SaaS Products</h3>
-        <p>From an idea to a product people pay for: multi-tenancy, auth, billing, analytics, and the release pipeline that keeps it shipping.</p>
-      </li>
-      <li class="capx-item" data-device="tablet" data-screen="flow">
-        <span class="cap-num">05</span>
-        <h3>Business Digitalization</h3>
-        <p>Paper, spreadsheets and manual handoffs turned into software that runs itself — wired into the tools your team already uses.</p>
-      </li>
-      <li class="capx-item" data-device="tablet" data-screen="ai">
-        <span class="cap-num">06</span>
-        <h3>AI &amp; Automation</h3>
-        <p>Assistants, document intelligence and automation built into real workflows, with evaluation and guardrails. Working systems, not demos.</p>
-      </li>
-      </ol>
-
-      <div class="capx-foot">
-        <div class="capx-dots" id="capdots" role="tablist" aria-label="Capabilities"></div>
-        <a class="btn" href="/#contact"><span>Start a project</span>
-          <svg class="ar" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-            <path d="M2 11L11 2M11 2H4M11 2v7" stroke="currentColor" stroke-width="1.2"
-                  stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <li class="capx-item" data-device="laptop">
+      <div class="scr scr--mac" data-scr>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span>
+            <span class="url"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3.6 5.2V3.7a2.4 2.4 0 0 1 4.8 0v1.5" stroke="currentColor" stroke-width=".9"/><rect x="2.6" y="5.2" width="6.8" height="5" rx="1.2" fill="currentColor"/></svg>acmemeridian.com/web-platforms</span></div>
+          <div class="win-body page">
+            <span class="scr-num">02</span>
+            <h3>Web Platforms</h3>
+            <p>Sites, portals and commerce that load instantly, rank, and convert. Designed and engineered in-house — no handoff between a designer and a dev shop.</p>
+            <div class="tiles">
+              <div><b>100</b><span>Lighthouse</span></div>
+              <div><b>0.4s</b><span>Largest paint</span></div>
+              <div><b>Edge</b><span>Rendered</span></div>
+            </div>
+          </div>
+        </div>
       </div>
+    </li>
+
+    <li class="capx-item" data-device="phone">
+      <div class="scr scr--phone" data-scr>
+        <div class="ios">
+          <div class="ios-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
+          <div class="ios-body">
+            <span class="scr-num">03</span>
+            <h3>Mobile Applications</h3>
+            <p>Native iOS and Android apps, designed and engineered in-house — through store review, subscriptions and the release cadence that comes after launch.</p>
+            <div class="ios-rows">
+              <div class="ios-row"><span>App Store review</span><em>Passed</em></div>
+              <div class="ios-row"><span>Subscriptions</span><em>Live</em></div>
+              <div class="ios-row"><span>Crash-free sessions</span><em>99.8%</em></div>
+            </div>
+          </div>
+          <div class="ios-tabs"><i class="on"></i><i></i><i></i><i></i><span class="ios-home"></span></div>
+        </div>
+      </div>
+    </li>
+
+    <li class="capx-item" data-device="laptop">
+      <div class="scr scr--mac" data-scr>
+        <div class="win">
+          <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span>
+            <span class="url"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3.6 5.2V3.7a2.4 2.4 0 0 1 4.8 0v1.5" stroke="currentColor" stroke-width=".9"/><rect x="2.6" y="5.2" width="6.8" height="5" rx="1.2" fill="currentColor"/></svg>app.acmemeridian.com</span></div>
+          <div class="win-body app">
+            <div class="app-side"><span class="am"></span><i class="on"></i><i></i><i></i><i></i></div>
+            <div class="app-main">
+              <span class="scr-num">04</span>
+              <h3>SaaS Products</h3>
+              <p>From an idea to a product people pay for: multi-tenancy, auth, billing, analytics, and the release pipeline that keeps it shipping.</p>
+              <div class="kpis">
+                <div><span>MRR</span><b>$48.2k</b></div>
+                <div><span>Tenants</span><b>1,284</b></div>
+                <div><span>Churn</span><b>1.1%</b></div>
+              </div>
+              <div class="chart"><i style="height:34%"></i><i style="height:46%"></i><i style="height:41%"></i><i style="height:58%"></i><i style="height:67%"></i><i style="height:62%"></i><i style="height:79%"></i><i style="height:88%"></i><i style="height:100%"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="capx-item" data-device="tablet">
+      <div class="scr scr--pad" data-scr>
+        <div class="pad">
+          <div class="pad-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
+          <div class="pad-body">
+            <span class="scr-num">05</span>
+            <h3>Business Digitalization</h3>
+            <p>Paper, spreadsheets and manual handoffs turned into software that runs itself — wired into the tools your team already uses.</p>
+            <div class="flow">
+              <div class="fl done"><span>Intake</span><em>Form replaces paper</em></div>
+              <div class="fl done"><span>Approval</span><em>Routed automatically</em></div>
+              <div class="fl done"><span>Invoice</span><em>Issued on sign-off</em></div>
+              <div class="fl"><span>Archive</span><em>Searchable, audited</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <li class="capx-item" data-device="tablet">
+      <div class="scr scr--pad" data-scr>
+        <div class="pad">
+          <div class="pad-status"><span>9:41</span><span class="ios-ind"><i class="sig"></i><i class="bat"></i></span></div>
+          <div class="pad-body chat">
+            <div class="chat-side"><span class="am"></span><i class="on"></i><i></i><i></i></div>
+            <div class="chat-main">
+              <div class="bub you">How would you automate our claims intake?</div>
+              <div class="bub bot">
+                <span class="scr-num">06</span>
+                <h3>AI &amp; Automation</h3>
+                <p>Assistants, document intelligence and automation built into real workflows, with evaluation and guardrails. Working systems, not demos.</p>
+                <div class="chips"><span>Read document</span><span>Extract fields</span><span>Verify</span></div>
+              </div>
+              <div class="composer"><span>Ask anything…</span><i></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    </ol>
+
+    <div class="capx-foot">
+      <div class="capx-dots" id="capdots" role="tablist" aria-label="Capabilities"></div>
+      <a class="btn" href="/#contact"><span>Start a project</span>
+        <svg class="ar" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+          <path d="M2 11L11 2M11 2H4M11 2v7" stroke="currentColor" stroke-width="1.2"
+                stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
   </div>
 </section>
