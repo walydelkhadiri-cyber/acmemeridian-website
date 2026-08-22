@@ -160,11 +160,14 @@ p{margin:0 0 1.1em}
 @keyframes cue{0%{transform:translateY(-100%)}60%,100%{transform:translateY(100%)}}
 
 /* ---------------------------------------------------------------- marquee */
-.marquee{border-block:1px solid var(--line);overflow:hidden;padding-block:1.15rem;
-         mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-         -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee{border-block:1px solid var(--line);overflow:hidden;padding-block:1.05rem}
+.marquee-label{font-size:clamp(8.5px,.24vw + 7.5px,9.5px);text-transform:uppercase;
+  letter-spacing:.42em;color:var(--t4);margin:0 0 .85rem;text-align:center;
+  padding-left:.42em}
 .marquee ul{display:flex;gap:3.2rem;list-style:none;margin:0;padding:0;width:max-content;
-            animation:slide 46s linear infinite}
+            animation:slide 46s linear infinite;
+            mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+            -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .marquee:hover ul{animation-play-state:paused}
 .marquee li{font-size:.74rem;letter-spacing:.26em;text-transform:uppercase;
             color:var(--t4);white-space:nowrap;display:flex;align-items:center;gap:3.2rem}
