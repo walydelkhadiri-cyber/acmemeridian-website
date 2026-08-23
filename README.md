@@ -8,15 +8,43 @@ file, commit, push — GitHub Pages serves it.
 ## Structure
 
 ```
-index.html          the whole one-page site
-styles.css          design system + every component
-app.js              meridian canvas, reveals, 3D card, menu, copy-to-clipboard
+index.html          the home page — one WebGL camera move, driven by scroll
+meridian.css        the home page's design system and chapter layout
+assets/world.js     the scene: procedural concrete, the rig, the post chain
+assets/screens.js   the artwork painted onto the device screens
+assets/screens/     drop-in replacements for that artwork (see its README)
+styles.css          design system for the legal pages
+app.js              reveals, menu, copy-to-clipboard — legal pages only
 privacy/ terms/ legal/   legal pages (clean URLs via folders)
 assets/             icons, OG cover, fonts, the card as SVG
 downloads/          the business card PDFs and the vCard
 tools/              generators — only needed when regenerating assets
 CNAME               acmemeridian.com
 ```
+
+`styles.css` and `meridian.css` are deliberately separate: the legal pages load
+`styles.css`, so the home page could not take that filename without breaking them.
+
+## The home page
+
+One camera move down an architectural void. Scroll position drives a
+`CatmullRomCurve3`; everything the site says is placed along that line — the mark,
+a luminous ring, the three devices on plinths, the method as one rail marked five
+times, contact. Chapters are HTML pinned over the frame, so the copy stays
+selectable and indexable.
+
+Nothing is tone-mapped by three.js. The scene renders linear into a float target
+and a hand-written chain does bright-pass → a four-level blur pyramid → one
+composite (chromatic aberration, bloom, ACES, split tone, vignette, grain). That
+grade is why it reads as film rather than as WebGL.
+
+**Without WebGL** the page is a plain stacked document that reads top to bottom.
+`meridian.css` authors both; `world.js` adds `.gl` to `<html>` and takes it back
+off if anything throws before the first frame lands. Never let the pinned layout
+apply without a renderer behind it — the result is a black screen with nothing on it.
+
+`?t=0.34` pins the move at one point on the line, for capturing stills.
+`window.MERIDIAN` exposes the scene, camera, composite material and rig.
 
 ## Local preview
 
