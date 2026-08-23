@@ -648,8 +648,11 @@ stationLights(new THREE.Vector3(0, 4.99, STATION.tablet), 4.99);
   const end = monoSign.clone();
   end.material = monoSign.material.clone();
   end.material.opacity = 0.85;
-  end.position.set(0, 8.6, -412);
-  end.scale.setScalar(1.15);
+  /* Kept wholly below the look axis. The copy block is a roughly fixed height
+     in pixels, so on a short viewport it eats further down the frame — the
+     mark has to clear the bottom half outright, not merely sit low in it. */
+  end.position.set(0, 5.2, -412);
+  end.scale.setScalar(0.85);
   scene.add(end);
 }
 

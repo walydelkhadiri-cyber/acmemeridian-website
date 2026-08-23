@@ -137,7 +137,7 @@ p{margin:0 0 1.05em}
 /* 01 · threshold, 08 · contact ------------------------------------------- */
 .gl .chapter--hero{justify-content:flex-end}
 .gl .cue{display:flex}
-.gl .chapter--end{justify-content:center}
+.gl .chapter--end{justify-content:flex-start}
 .chapter--hero h1{max-width:13ch}
 .chapter--hero .lede{margin-bottom:2.4rem}
 .cue{
