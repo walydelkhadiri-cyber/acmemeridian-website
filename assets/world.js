@@ -945,6 +945,71 @@ if (location.hash) {
   });
 }
 
+/* =================================================================== warp
+   Leaving for /start/. The camera drops off the scroll rail and accelerates
+   down the line it is already looking at, the lens widens, and the grade is
+   pushed until the frame blows out — then the navigation happens inside the
+   white, where there is nothing left to see. /start/ opens on that same white
+   and pulls out of it, so the two pages read as one move.
+
+   The flag is what tells the far side which entrance to play; a visitor who
+   arrives from a link or a bookmark gets the quiet one instead. */
+
+const WARP = {
+  on: false, gone: false, t: 0, dur: 1.0, href: '',
+  from: new THREE.Vector3(), dir: new THREE.Vector3(), fov: 46,
+};
+
+function beginWarp(href) {
+  if (WARP.on) return;
+  WARP.on = true;
+  WARP.href = href;
+  WARP.from.copy(camera.position);
+  camera.getWorldDirection(WARP.dir);
+  WARP.fov = camera.fov;
+  try { sessionStorage.setItem('meridian:warp', '1'); } catch (e) { /* private mode */ }
+  document.documentElement.classList.add('warping');
+  /* The hand-off happens inside the render loop, and a loop can stop: a lost
+     context, a hidden tab, a throttled frame. The link must still lead
+     somewhere, so time it out well past the animation and go regardless. */
+  setTimeout(() => {
+    if (!WARP.gone) { WARP.gone = true; location.href = WARP.href; }
+  }, 1500);
+}
+
+/* The white at the end of the flight is only convincing if the far side is
+   already there. Warm it on the first hint of intent — a hover, a touch — so
+   the hand-off is a cut and not a wait. */
+let warmed = false;
+function warm(href) {
+  if (warmed) return;
+  warmed = true;
+  /* resolved against this module rather than the domain root, so the same code
+     works from a subfolder preview */
+  for (const url of [href, new URL('start.js', import.meta.url).href]) {
+    const l = document.createElement('link');
+    l.rel = 'prefetch';
+    l.href = url;
+    document.head.appendChild(l);
+  }
+}
+for (const a of document.querySelectorAll('a[data-warp]')) {
+  const href = a.getAttribute('href');
+  a.addEventListener('pointerenter', () => warm(href), { once: true });
+  a.addEventListener('touchstart', () => warm(href), { once: true, passive: true });
+}
+
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('a[data-warp]');
+  if (!a) return;
+  /* let the browser do its own thing for a new tab, a download, a modified
+     click — the animation is a nicety, never the only way through */
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  e.preventDefault();
+  beginWarp(a.getAttribute('href'));
+});
+
 /* =================================================================== loop */
 
 const clock = new THREE.Clock();
@@ -965,20 +1030,43 @@ function frame() {
   swayCur.x = damp(swayCur.x, RIG.sway.x, 2.2, dt);
   swayCur.y = damp(swayCur.y, RIG.sway.y, 2.2, dt);
 
-  camera.position.set(
-    _p.x + swayCur.x * 0.5 + Math.sin(elapsed * 0.31) * 0.11,
-    _p.y - swayCur.y * 0.32 + Math.sin(elapsed * 0.44 + 1.2) * 0.08,
-    _p.z
-  );
-  /* The look curve is composed for a landscape frame: the object sits right of
-     centre so the copy owns the left. A portrait phone has no left column, so
-     re-centre the object and lift it above the copy band instead. */
-  const wide = W / H >= 0.9;
-  camera.lookAt(
-    _l.x + (wide ? 0 : 1.0) + swayCur.x * 0.55,
-    _l.y - (wide ? 0 : 1.15) - swayCur.y * 0.4,
-    _l.z
-  );
+  if (WARP.on) {
+    WARP.t = Math.min(1, WARP.t + dt / WARP.dur);
+    const e = WARP.t * WARP.t * (3 - 2 * WARP.t);
+    /* cubed, so it reads as acceleration away from the visitor rather than a
+       constant slide: the first half barely moves and most of the travel
+       happens under the blow-out, where the eye cannot follow it anyway */
+    const rush = WARP.t * WARP.t * WARP.t;
+
+    camera.position.copy(WARP.from).addScaledVector(WARP.dir, rush * 96);
+    camera.rotation.z = -e * 0.055;              /* lookAt is skipped, so this holds */
+    camera.fov = WARP.fov + e * 24;
+    camera.updateProjectionMatrix();
+
+    compMat.uniforms.uExp.value = 1.3 + rush * 7.4;
+    compMat.uniforms.uBloom.value = 0.44 + rush * 1.15;
+    compMat.uniforms.uCA.value = 0.0009 + rush * 0.009;
+    compMat.uniforms.uVig.value = 0.68 * (1 - e);
+
+    /* hand over while the frame is still white — the CSS flash is already up
+       underneath, so the paint does not change across the navigation */
+    if (WARP.t >= 1 && !WARP.gone) { WARP.gone = true; location.href = WARP.href; }
+  } else {
+    camera.position.set(
+      _p.x + swayCur.x * 0.5 + Math.sin(elapsed * 0.31) * 0.11,
+      _p.y - swayCur.y * 0.32 + Math.sin(elapsed * 0.44 + 1.2) * 0.08,
+      _p.z
+    );
+    /* The look curve is composed for a landscape frame: the object sits right of
+       centre so the copy owns the left. A portrait phone has no left column, so
+       re-centre the object and lift it above the copy band instead. */
+    const wide = W / H >= 0.9;
+    camera.lookAt(
+      _l.x + (wide ? 0 : 1.0) + swayCur.x * 0.55,
+      _l.y - (wide ? 0 : 1.15) - swayCur.y * 0.4,
+      _l.z
+    );
+  }
 
   lantern.position.set(camera.position.x, camera.position.y + 1.5, camera.position.z - 4);
 
@@ -1040,4 +1128,5 @@ frame();
 
 
 /* exposed for tuning from the console while the look is being dialled in */
-window.MERIDIAN = { scene, camera, renderer, compMat, RIG, devices, camCurve, lookCurve };
+window.MERIDIAN = { scene, camera, renderer, compMat, RIG, devices, camCurve, lookCurve,
+                    WARP, beginWarp };

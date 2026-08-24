@@ -44,7 +44,38 @@ off if anything throws before the first frame lands. Never let the pinned layout
 apply without a renderer behind it — the result is a black screen with nothing on it.
 
 `?t=0.34` pins the move at one point on the line, for capturing stills.
-`window.MERIDIAN` exposes the scene, camera, composite material and rig.
+`window.MERIDIAN` exposes the scene, camera, composite material, rig and `WARP` —
+setting `WARP.dur` high and `WARP.t` by hand freezes the departure at a chosen
+point, which is the only way to look at a one-second flight properly.
+
+## Start a project
+
+`/start/` is a real page, not a modal: it survives a direct link, a refresh and a
+blocked module. Three things have to hold together for it to feel like one move.
+
+**The departure.** `a[data-warp]` on the home page hands the rig to `WARP` in
+`world.js`. The camera leaves the scroll curve, accelerates down the line it is
+already looking at, the lens widens and the grade is pushed until the frame blows
+out; the navigation happens inside that white, where there is nothing left to see.
+A `sessionStorage` flag tells the far side which entrance to play. Two safety nets:
+the loop can stop (hidden tab, lost context), so a 1.5 s timeout navigates
+regardless, and reduced-motion or a modified click skips the whole thing and
+follows the link.
+
+**The arrival.** `assets/start.js` opens on the same white and pulls out of it —
+exposure ramps down, the camera comes back off the mark. Its chamber is a separate,
+much smaller scene than the corridor, with a two-level blur instead of four: it is
+one held frame, not a move. Below 520 px there is no chamber at all; a phone gets a
+black page and no WebGL bill. The form is written first and imports three.js
+dynamically, so nothing in the backdrop can take the brief down with it.
+
+**The send.** `POST` to FormSubmit's AJAX endpoint. Three paths, all landing
+somewhere: JS sends it and answers in place; without JS the form's own `action`
+POSTs natively and comes back to `?sent=1`, which shows the same screen; and if the
+request fails the brief is handed back as a composed `mailto:` rather than lost.
+
+The address must be confirmed once before anything is delivered — FormSubmit emails
+an activation link to `walyd@acmemeridian.com` on the first submission.
 
 ## Local preview
 

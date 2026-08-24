@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Start a project — Acme Meridian</title>
+<meta name="description" content="Tell us what you want to build. A short brief goes straight to the person who will build it — one reply, usually within a day.">
+<link rel="canonical" href="https://acmemeridian.com/start/">
+<meta name="theme-color" content="#050506">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Acme Meridian">
+<meta property="og:url" content="https://acmemeridian.com/start/">
+<meta property="og:title" content="Start a project — Acme Meridian">
+<meta property="og:description" content="Tell us what you want to build. A short brief goes straight to the person who will build it.">
+<meta property="og:image" content="https://acmemeridian.com/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Start a project — Acme Meridian">
+<meta name="twitter:description" content="Tell us what you want to build. A short brief goes straight to the person who will build it.">
+<meta name="twitter:image" content="https://acmemeridian.com/assets/og-cover.png">
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter-var.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/cormorant-var.woff2" crossorigin>
+<link rel="stylesheet" href="/meridian.css">
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="flash" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="mark" href="/" aria-label="Acme Meridian — home">
+    <svg viewBox="0 0 140 100" aria-hidden="true" width="30" height="21">
+      <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 88V12l52 36 52-36v76" stroke-width="9"/>
+        <path d="M42 88l28-40 28 40" stroke-width="9"/>
+        <path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/>
+      </g>
+    </svg>
+    <span>Acme Meridian</span>
+  </a>
+  <p class="nav-note nav-back"><a href="/">&larr; Back</a></p>
+</header>
+
+<main class="start-wrap">
+
+  <div class="start-head rise" style="--d:.05s">
+    <p class="eyebrow">Start a project</p>
+    <h1>Tell us what you&rsquo;re building.</h1>
+    <p class="lede">Five minutes here saves a week of back and forth. It goes straight to the
+      person who will build it &mdash; one reply, usually within a day.</p>
+  </div>
+
+  <!-- A real action, so the page still works with the module blocked: the
+       browser POSTs natively and FormSubmit sends us back to ?sent=1. With JS
+       the submit is intercepted and answered in place. -->
+  <form id="brief" novalidate method="POST"
+        action="https://formsubmit.co/walyd@acmemeridian.com">
+    <input type="hidden" name="_subject" value="New project brief — acmemeridian.com">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
+    <input type="hidden" name="_next" value="https://acmemeridian.com/start/?sent=1">
+
+    <!-- honeypot: a human never sees this, a scraper fills it -->
+    <div class="hp" aria-hidden="true">
+      <label for="_honey">Leave this empty</label>
+      <input type="text" id="_honey" name="_honey" tabindex="-1" autocomplete="off">
+    </div>
+
+    <fieldset class="fs rise" style="--d:.14s">
+      <legend><b>01</b> Who you are</legend>
+      <div class="grid">
+        <div class="field">
+          <label for="name">Your name <span class="req">*</span></label>
+          <input type="text" id="name" name="name" autocomplete="name" required
+                 placeholder="The person running this project">
+          <p class="err">We need a name to reply to.</p>
+        </div>
+        <div class="field">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="email" autocomplete="email" required
+                 placeholder="you@company.com">
+          <p class="err">That address doesn&rsquo;t look right.</p>
+        </div>
+        <div class="field">
+          <label for="company">Company or organisation</label>
+          <input type="text" id="company" name="company" autocomplete="organization"
+                 placeholder="Optional">
+        </div>
+        <div class="field">
+          <label for="country">Where you are</label>
+          <input type="text" id="country" name="country" autocomplete="country-name"
+                 placeholder="City, country — optional">
+        </div>
+        <div class="field wide" role="group" aria-labelledby="forwho-l">
+          <label id="forwho-l">This project is for <span class="req">*</span></label>
+          <div class="choices" data-name="For">
+            <label class="choice"><input type="radio" name="forwho" value="My company" required><span>My company</span></label>
+            <label class="choice"><input type="radio" name="forwho" value="Myself — personal project"><span>Myself, personally</span></label>
+            <label class="choice"><input type="radio" name="forwho" value="A client of mine"><span>A client of mine</span></label>
+            <label class="choice"><input type="radio" name="forwho" value="A startup being founded"><span>A startup we&rsquo;re founding</span></label>
+          </div>
+          <p class="err">Pick the one that fits best.</p>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="fs rise" style="--d:.22s">
+      <legend><b>02</b> The project</legend>
+      <div class="grid">
+        <div class="field wide">
+          <label for="title">Project title <span class="req">*</span></label>
+          <input type="text" id="title" name="title" required
+                 placeholder="A working name is fine">
+          <p class="err">Give it a name, even a rough one.</p>
+        </div>
+        <div class="field wide" role="group" aria-labelledby="build-l">
+          <label id="build-l">What do you want built <span class="req">*</span></label>
+          <p class="hint">Pick everything that applies &mdash; most projects are more than one.</p>
+          <div class="choices" data-name="Wants">
+            <label class="choice"><input type="checkbox" name="build" value="Website"><span>A website</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="Web platform / portal"><span>A web platform</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="SaaS product"><span>A SaaS product</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="Mobile app (iOS / Android)"><span>A mobile app</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="E-commerce"><span>E-commerce</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="Custom internal software"><span>Internal software</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="AI / automation"><span>AI &amp; automation</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="Digitalizing an existing process"><span>Digitalizing a process</span></label>
+            <label class="choice"><input type="checkbox" name="build" value="Not sure yet"><span>Not sure yet</span></label>
+          </div>
+          <p class="err">Choose at least one &mdash; &ldquo;not sure yet&rdquo; counts.</p>
+        </div>
+        <div class="field wide" role="group" aria-labelledby="stage-l">
+          <label id="stage-l">Where it stands today</label>
+          <div class="choices" data-name="Stage">
+            <label class="choice"><input type="radio" name="stage" value="An idea, nothing written"><span>An idea</span></label>
+            <label class="choice"><input type="radio" name="stage" value="Specs or designs exist"><span>Specs or designs exist</span></label>
+            <label class="choice"><input type="radio" name="stage" value="Something is live, needs extending"><span>Something is live</span></label>
+            <label class="choice"><input type="radio" name="stage" value="A rebuild of an existing product"><span>A rebuild</span></label>
+          </div>
+        </div>
+        <div class="field wide">
+          <label for="brief-text">Tell us about it <span class="req">*</span></label>
+          <p class="hint">What it does, who uses it, and what has to be true for it to count as a
+            success. Write it the way you&rsquo;d explain it to a colleague &mdash; no format needed.</p>
+          <textarea id="brief-text" name="detail" required rows="7"
+            placeholder="We run a logistics company in Lyon. Drivers still fill in paper sheets and someone re-types them every evening…"></textarea>
+          <p class="err">A couple of sentences is enough, but we need something.</p>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="fs rise" style="--d:.3s">
+      <legend><b>03</b> Shape and timing</legend>
+      <div class="grid">
+        <div class="field wide" role="group" aria-labelledby="when-l">
+          <label id="when-l">When you want to start</label>
+          <div class="choices" data-name="Timeline">
+            <label class="choice"><input type="radio" name="timeline" value="As soon as possible"><span>As soon as possible</span></label>
+            <label class="choice"><input type="radio" name="timeline" value="Within 1–3 months"><span>1&ndash;3 months</span></label>
+            <label class="choice"><input type="radio" name="timeline" value="Within 3–6 months"><span>3&ndash;6 months</span></label>
+            <label class="choice"><input type="radio" name="timeline" value="No fixed date"><span>No fixed date</span></label>
+          </div>
+        </div>
+        <div class="field wide" role="group" aria-labelledby="budget-l">
+          <label id="budget-l">Budget you have in mind</label>
+          <p class="hint">A range, not a commitment. It tells us what version of this is worth
+            proposing &mdash; and we&rsquo;ll say plainly if it doesn&rsquo;t reach.</p>
+          <div class="choices" data-name="Budget">
+            <label class="choice"><input type="radio" name="budget" value="Under $5,000"><span>Under $5k</span></label>
+            <label class="choice"><input type="radio" name="budget" value="$5,000 – $15,000"><span>$5k &ndash; $15k</span></label>
+            <label class="choice"><input type="radio" name="budget" value="$15,000 – $50,000"><span>$15k &ndash; $50k</span></label>
+            <label class="choice"><input type="radio" name="budget" value="Over $50,000"><span>$50k +</span></label>
+            <label class="choice"><input type="radio" name="budget" value="Not sure yet"><span>Not sure yet</span></label>
+          </div>
+        </div>
+        <div class="field wide">
+          <label for="links">Links or anything else</label>
+          <input type="text" id="links" name="links"
+                 placeholder="Current site, competitors, a deck — optional">
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="start-foot rise" style="--d:.38s">
+      <button class="btn solid" type="submit" id="send"><span>Send the brief</span>
+        <svg class="ar" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+          <path d="M2 11L11 2M11 2H4M11 2v7" stroke="currentColor" stroke-width="1.2"
+                stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <p class="start-note">We use this to reply to you and nothing else. No list, no CRM, no
+        third party. <a href="/privacy/">Privacy</a>.</p>
+    </div>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+  </form>
+
+  <div class="sent" id="sent">
+    <p class="eyebrow" style="justify-content:center">Received</p>
+    <h2>Thank you &mdash; it&rsquo;s in.</h2>
+    <p>Your brief went straight to Walyd. You&rsquo;ll get a real reply from the person who would
+      build this, usually within a day.</p>
+    <p style="margin-top:2rem"><a class="btn" href="/"><span>Back to the site</span></a></p>
+  </div>
+
+</main>
+
+<footer class="foot">
+  <nav class="foot-links" aria-label="Footer">
+    <a href="/#capabilities">Capabilities</a>
+    <a href="/#process">How we work</a>
+    <a href="/#contact">Contact</a>
+    <a href="/privacy/">Privacy</a>
+    <a href="/terms/">Terms</a>
+    <a href="/legal/">Legal</a>
+  </nav>
+  <p class="foot-legal">
+    ACME MERIDIAN LLC &middot; A limited liability company registered in Wyoming, USA.<br>
+    <a href="mailto:walyd@acmemeridian.com">walyd@acmemeridian.com</a>
+    &middot; &copy; <span id="yr">2026</span> Acme Meridian LLC. All rights reserved.
+  </p>
+</footer>
+
+<script type="module" src="/assets/start.js"></script>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
