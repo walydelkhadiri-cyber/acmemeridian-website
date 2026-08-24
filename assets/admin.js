@@ -12,6 +12,7 @@
    out clears both and revokes the session server-side.
    ========================================================================== */
 import { SUPABASE_URL, ANON_KEY, API } from './config.js';
+import { trackNavHeight } from './chrome.js';
 
 const $ = (s) => document.querySelector(s);
 const gate = $('#gate'), body = $('#body'), detail = $('#detail'), statusEl = $('#status');
@@ -305,3 +306,5 @@ async function start() {
 /* A stored refresh token means the last session can be picked back up without
    asking again. Anything else lands on the form. */
 resume().then(start);
+
+trackNavHeight();

@@ -14,6 +14,7 @@
    ========================================================================== */
 import * as THREE from './vendor/three.module.min.js';
 import { SCREENS } from './screens.js';
+import { trackNavHeight } from './chrome.js';
 
 const DEG = Math.PI / 180;
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
@@ -1130,3 +1131,5 @@ frame();
 /* exposed for tuning from the console while the look is being dialled in */
 window.MERIDIAN = { scene, camera, renderer, compMat, RIG, devices, camCurve, lookCurve,
                     WARP, beginWarp };
+
+trackNavHeight();

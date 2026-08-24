@@ -107,12 +107,17 @@ a{color:inherit;text-decoration:none}
   max-width:var(--maxw);margin-inline:auto;
   padding:clamp(3rem,7vh,5rem) var(--gut);
 }
+/* only the first one is under the fixed bar; the rest are scrolled past it */
+.chapter:first-of-type{padding-top:calc(var(--nav-h,5.9rem) + 1.6rem)}
 .chapter + .chapter{border-top:1px solid var(--line-soft, rgba(255,255,255,.07))}
 
 .gl .chapter{
   position:fixed;inset:0;z-index:10;
   display:flex;flex-direction:column;gap:0;
-  padding:clamp(5rem,11vh,8rem) var(--gut) clamp(2.2rem,6vh,4rem);
+  /* Measured, not guessed — see assets/chrome.js. The fallback covers the
+     moment before the module runs and the case where it never does. */
+  padding:calc(var(--nav-h,5.9rem) + clamp(.6rem,3.5vh,2.4rem))
+          var(--gut) clamp(2.2rem,6vh,4rem);
   max-width:var(--maxw);margin-inline:auto;
   opacity:0;pointer-events:none;border-top:0;
   will-change:opacity,transform;
@@ -128,8 +133,11 @@ a{color:inherit;text-decoration:none}
 
 h1,h2,h3{font-family:var(--display);font-weight:300;letter-spacing:-.02em;
          line-height:1.05;margin:0;color:var(--t1)}
-h1{font-size:clamp(2.4rem,5.8vw,5.1rem)}
-h2{font-size:clamp(2rem,4.4vw,3.7rem)}
+/* min() against vh as well as vw: a wide but short frame — a laptop window
+   dragged down, a phone on its side — is exactly where display type set from
+   width alone stops fitting. */
+h1{font-size:clamp(2.4rem,min(5.8vw,8.2vh),5.1rem)}
+h2{font-size:clamp(2rem,min(4.4vw,7vh),3.7rem)}
 h3{font-size:clamp(1.3rem,1.6vw,1.85rem);line-height:1.2}
 p{margin:0 0 1.05em}
 
@@ -138,10 +146,25 @@ p{margin:0 0 1.05em}
   max-width:52ch;margin-top:1.5rem;font-weight:300;
 }
 
+/* An overflowing flex-end container pushes its content out through the *top* —
+   straight under the fixed nav, which is how the hero headline ended up written
+   across the wordmark on a short viewport. An auto margin does the same job of
+   pinning to the bottom when there is room, but resolves to zero when there is
+   not, so copy can never escape above its own padding box. Applied to every
+   pinned chapter, not just the one that was caught. */
+.gl .chapter--hero,
+.gl .chapter--mid,
+.gl .chapter--device,
+.gl .chapter--proc{justify-content:flex-start}
+.gl .chapter--hero > :first-child,
+.gl .chapter--mid > :first-child,
+.gl .chapter--device > :first-child,
+.gl .chapter--proc > :first-child{margin-top:auto}
+
 /* 01 · threshold, 08 · contact ------------------------------------------- */
-.gl .chapter--hero{justify-content:flex-end}
 .gl .cue{display:flex}
 .gl .chapter--end{justify-content:flex-start}
+.gl .chapter--end > :first-child{margin-top:0}
 .chapter--hero h1{max-width:13ch}
 .chapter--hero .lede{margin-bottom:2.4rem}
 .cue{
@@ -167,7 +190,7 @@ p{margin:0 0 1.05em}
 
 /* 02 · the meridian ------------------------------------------------------- */
 .chapter--mid{position:relative}
-.gl .chapter--mid{justify-content:flex-end;align-items:flex-start}
+.gl .chapter--mid{align-items:flex-start}
 .line{max-width:16ch}
 .chapter--mid .sub{
   margin-top:1.6rem;max-width:48ch;color:var(--t3);
@@ -181,7 +204,6 @@ p{margin:0 0 1.05em}
 /* 03–05 · devices, 07 · the card -----------------------------------------
    The object owns the middle of the frame, so the copy lives in the bottom
    band and never crosses it.                                               */
-.gl .chapter--device{justify-content:flex-end}
 .deck{max-width:40ch;position:relative}
 /* a soft scrim under the copy — the object owns the right of the frame, and
    type still needs ground when a lit edge sweeps behind it */
@@ -218,8 +240,7 @@ p{margin:0 0 1.05em}
 
 /* 06 · method ------------------------------------------------------------- */
 .chapter--proc{position:relative}
-.gl .chapter--proc{justify-content:flex-end;
-  padding-bottom:clamp(3rem,8vh,5.5rem)}
+.gl .chapter--proc{padding-bottom:clamp(3rem,8vh,5.5rem)}
 .proc{
   list-style:none;margin:0;padding:0;
   display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
@@ -352,7 +373,8 @@ html.arriving.landed .flash{opacity:0;transition:opacity .55s var(--ease)}
 .start-wrap{
   position:relative;z-index:10;
   max-width:920px;margin-inline:auto;
-  padding:clamp(6rem,14vh,9rem) var(--gut) clamp(3rem,8vh,5rem);
+  padding:calc(var(--nav-h,5.9rem) + clamp(1.4rem,5vh,3.4rem))
+          var(--gut) clamp(3rem,8vh,5rem);
 }
 .start-head{margin-bottom:clamp(2.4rem,6vh,3.8rem)}
 .start-head h1{font-size:clamp(2.1rem,4.6vw,3.9rem);max-width:14ch}
@@ -448,7 +470,7 @@ input:focus,textarea:focus{
 
 @media (max-width:760px){
   .grid{grid-template-columns:1fr}
-  .start-wrap{padding-top:clamp(5rem,12vh,7rem)}
+  .start-wrap{padding-top:calc(var(--nav-h,5.9rem) + 1.2rem)}
   .start-foot{flex-direction:column;align-items:stretch}
   .start-foot .btn{justify-content:center}
 }
@@ -478,7 +500,8 @@ input:focus,textarea:focus{
    that is not a brief. It borrows the palette and the type so it feels like
    the same company, and borrows nothing else.                              */
 .admin{background:var(--void)}
-.adm{max-width:1180px;margin-inline:auto;padding:clamp(5.5rem,12vh,7.5rem) var(--gut) 5rem}
+.adm{max-width:1180px;margin-inline:auto;
+     padding:calc(var(--nav-h,5.9rem) + clamp(1rem,4vh,2.6rem)) var(--gut) 5rem}
 .adm h1{font-size:clamp(1.9rem,3.4vw,2.9rem)}
 
 .linkish{
@@ -555,4 +578,51 @@ input:focus,textarea:focus{
   .adm-tags{grid-column:1 / -1;order:4;white-space:normal}
   .adm-money{display:none}
   .adm-head{align-items:flex-start}
+}
+
+/* ----------------------------------------------------------- laptop frames
+   1280x720 and 1366x768 are ordinary screens, not edge cases, and the hero has
+   one more element in it than it used to — the button. Not enough to warrant
+   the squeeze below, but enough that the generous margins no longer fit. */
+@media (max-height:820px) and (min-width:560px){
+  .eyebrow{margin-bottom:1rem}
+  .chapter--hero .lede{margin-top:1.1rem;margin-bottom:1.4rem}
+  .hero-actions{margin-bottom:1.2rem}
+  .chapter--mid .sub{margin-top:1.1rem}
+  .tools{margin-top:1.1rem;line-height:1.9}
+  .chapter--end .mailto{margin-top:1.5rem}
+  .chapter--end .btn{margin-top:1.6rem}
+}
+
+/* ------------------------------------------------------------ short frames
+   Landscape phones and half-height desktop windows. The chapters are pinned to
+   the viewport, so there is no scrolling out of a squeeze — the type has to
+   give. The scroll cue goes first: it is decoration, and on a frame this short
+   it is the least of what needs the room. */
+@media (max-height:600px) and (min-width:560px){
+  .gl .chapter{padding:calc(var(--nav-h,5.9rem) + .5rem) var(--gut) 1.6rem}
+  .gl .cue{display:none}
+  /* the display sizes above are still tuned for a frame with room; here the
+     height is the binding constraint and the type answers to it alone */
+  h1{font-size:clamp(1.75rem,min(5.4vw,8.6vh),3.4rem)}
+  h2{font-size:clamp(1.55rem,min(4.2vw,7.4vh),2.8rem)}
+  .eyebrow{margin-bottom:.7rem;letter-spacing:.34em}
+  .chapter--hero h1{max-width:16ch}
+  .chapter--hero .lede{
+    margin-top:.8rem;margin-bottom:.85rem;
+    font-size:.9rem;line-height:1.48;max-width:66ch;
+  }
+  .hero-actions{margin-bottom:0}
+  .hero-actions .btn{padding:.72rem 1.3rem;font-size:11px}
+  .chapter--mid .sub{margin-top:.9rem;font-size:.9rem;line-height:1.5}
+  .tools{display:none}
+  .gl .chapter--proc{padding-bottom:1.6rem}
+  .proc{gap:.7rem 1.4rem}
+  .proc li{padding-top:.6rem}
+  .proc span{margin-bottom:.4rem}
+  .proc p{font-size:.78rem;line-height:1.45}
+  .chapter--end .mailto{margin-top:.9rem}
+  .chapter--end .mailto a{font-size:clamp(1.1rem,min(2.6vw,5vh),1.7rem)}
+  .chapter--end .btn{margin-top:1rem}
+  .chapter--end .fine{display:none}      /* the footer says this again verbatim */
 }

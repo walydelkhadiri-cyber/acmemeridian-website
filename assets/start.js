@@ -14,6 +14,7 @@
    ========================================================================== */
 
 import { API } from './config.js';
+import { trackNavHeight } from './chrome.js';
 
 const ENDPOINT = API + '/brief';
 const MAILBOX  = 'walyd@acmemeridian.com';
@@ -526,3 +527,5 @@ function chamber(THREE) {
 
   frame();
 }
+
+trackNavHeight();
