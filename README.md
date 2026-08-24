@@ -69,13 +69,59 @@ one held frame, not a move. Below 520 px there is no chamber at all; a phone get
 black page and no WebGL bill. The form is written first and imports three.js
 dynamically, so nothing in the backdrop can take the brief down with it.
 
-**The send.** `POST` to FormSubmit's AJAX endpoint. Three paths, all landing
-somewhere: JS sends it and answers in place; without JS the form's own `action`
-POSTs natively and comes back to `?sent=1`, which shows the same screen; and if the
-request fails the brief is handed back as a composed `mailto:` rather than lost.
+**The send.** `POST` to the `brief` Edge Function. Three paths, all landing
+somewhere: JS sends JSON and answers in place; without JS the form's own `action`
+POSTs natively and the function replies with a redirect back to `?sent=1`, which
+shows the same screen; and if the request never lands, the brief is handed back as
+a composed `mailto:` rather than lost.
 
-The address must be confirmed once before anything is delivered — FormSubmit emails
-an activation link to `walyd@acmemeridian.com` on the first submission.
+## The backend
+
+Supabase project `slkyivycuxbjigwqpyzd`, region eu-west-3. Everything is in
+`supabase/` and deploys from here.
+
+**`briefs`** holds every submission. RLS is on with **no policies at all**, so the
+anon key in `assets/config.js` can read and write nothing in it — that key is public
+by design and must stay harmless. The only way in or out is an Edge Function using
+the service role key, which never leaves the server.
+
+**`brief`** (public) is the intake. It re-runs every rule the browser enforces,
+because client-side validation is a courtesy and not a control, and adds what only a
+server can do: an origin allow-list, length caps, a honeypot that answers `200` so a
+bot learns nothing, and a rate limit of three briefs per source per fifteen minutes.
+The rate limit counts against a salted SHA-256 of the IP; the address itself is never
+stored.
+
+**`admin`** (signed in) reads and triages. It verifies the caller's JWT with
+`auth.getUser`, then checks `app_metadata.role === 'admin'` — a verified token only
+proves somebody is *a* user, and `app_metadata` is the one claim a user cannot write
+for themselves. Public sign-up is off as well, but authorization should never depend
+on a setting somewhere else still being right.
+
+## /admin/
+
+Sign in with an email and password. Auth is Supabase Auth over plain `fetch` rather
+than the JS client: the whole surface used is three POSTs, and vendoring 40 KB to
+make them would be the wrong trade on a site with no dependencies anywhere else. The
+refresh token lives in `localStorage` so a daily check-in is not a daily login; the
+access token is held in memory only and renewed a minute before it expires.
+
+To create the account, or to change its password later:
+
+```bash
+./tools/create_admin.sh
+```
+
+It prompts with the terminal echo off, so the password never reaches your shell
+history or the process list. Supabase stores only a bcrypt hash of it.
+
+**Email notifications are not switched on.** The `brief` function already composes
+and sends the message; it simply skips that step while `RESEND_API_KEY` is unset, and
+logs that it did. To turn it on, set the secret and nothing else changes:
+
+```bash
+supabase secrets set RESEND_API_KEY=... --project-ref slkyivycuxbjigwqpyzd
+```
 
 ## Local preview
 

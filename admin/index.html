@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Briefs — Acme Meridian</title>
+<!-- A working tool, not a page. It must never be indexed, and a search engine
+     following a leaked link must not cache what it finds. -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#050506">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter-var.woff2" crossorigin>
+<link rel="stylesheet" href="/meridian.css">
+</head>
+<body class="admin">
+
+<header class="nav">
+  <a class="mark" href="/" aria-label="Acme Meridian — home">
+    <svg viewBox="0 0 140 100" aria-hidden="true" width="30" height="21">
+      <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 88V12l52 36 52-36v76" stroke-width="9"/>
+        <path d="M42 88l28-40 28 40" stroke-width="9"/>
+        <path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/>
+      </g>
+    </svg>
+    <span>Acme Meridian</span>
+  </a>
+  <p class="nav-note nav-back"><button type="button" id="signout" class="linkish">Sign out</button></p>
+</header>
+
+<main class="adm">
+
+  <!-- Signed out. This is the only door: public sign-up is off on the project,
+       so this form authenticates an existing account and cannot create one. -->
+  <section class="adm-gate" id="gate" hidden>
+    <p class="eyebrow">Briefs</p>
+    <h1>Sign in.</h1>
+    <form id="signin" class="adm-keyform">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="username"
+               autocapitalize="off" spellcheck="false" required>
+      </div>
+      <div class="field">
+        <label for="pw">Password</label>
+        <input type="password" id="pw" name="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn solid" type="submit" id="go"><span>Sign in</span></button>
+      <p class="status" id="gate-err" role="alert"></p>
+    </form>
+  </section>
+
+  <section class="adm-body" id="body" hidden>
+    <div class="adm-head">
+      <div>
+        <p class="eyebrow">Briefs</p>
+        <h1 id="count">—</h1>
+      </div>
+      <button class="btn" type="button" id="refresh"><span>Refresh</span></button>
+    </div>
+
+    <div class="choices adm-filters" id="filters" role="tablist" aria-label="Filter">
+      <label class="choice"><input type="radio" name="f" value="all" checked><span>All</span></label>
+      <label class="choice"><input type="radio" name="f" value="new"><span>New</span></label>
+      <label class="choice"><input type="radio" name="f" value="read"><span>Read</span></label>
+      <label class="choice"><input type="radio" name="f" value="replied"><span>Replied</span></label>
+      <label class="choice"><input type="radio" name="f" value="archived"><span>Archived</span></label>
+    </div>
+
+    <ol class="adm-list" id="list"></ol>
+    <p class="adm-empty" id="empty" hidden>Nothing here yet.</p>
+  </section>
+
+  <section class="adm-detail" id="detail" hidden></section>
+
+  <p class="status" id="status" role="status" aria-live="polite"></p>
+</main>
+
+<script type="module" src="/assets/admin.js"></script>
+</body>
+</html>

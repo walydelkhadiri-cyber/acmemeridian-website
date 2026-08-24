@@ -58,14 +58,12 @@
   </div>
 
   <!-- A real action, so the page still works with the module blocked: the
-       browser POSTs natively and FormSubmit sends us back to ?sent=1. With JS
-       the submit is intercepted and answered in place. -->
+       browser POSTs natively and the function answers with a redirect back to
+       ?sent=1. With JS the submit is intercepted and answered in place.
+       The host is filled in from assets/config.js at build time — keep the two
+       in step if the Supabase project ever moves. -->
   <form id="brief" novalidate method="POST"
-        action="https://formsubmit.co/walyd@acmemeridian.com">
-    <input type="hidden" name="_subject" value="New project brief — acmemeridian.com">
-    <input type="hidden" name="_template" value="table">
-    <input type="hidden" name="_captcha" value="false">
-    <input type="hidden" name="_next" value="https://acmemeridian.com/start/?sent=1">
+        action="https://slkyivycuxbjigwqpyzd.supabase.co/functions/v1/brief">
 
     <!-- honeypot: a human never sees this, a scraper fills it -->
     <div class="hp" aria-hidden="true">
@@ -199,6 +197,8 @@
 
     <div class="status" id="status" role="status" aria-live="polite"></div>
   </form>
+
+  <p class="status" id="nojs-err" hidden></p>
 
   <div class="sent" id="sent">
     <p class="eyebrow" style="justify-content:center">Received</p>

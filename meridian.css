@@ -428,10 +428,11 @@ input:focus,textarea:focus{
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 /* the two end states ------------------------------------------------------ */
-.status{margin:1.6rem 0 0;font-size:.92rem;color:var(--t3);display:none}
+.status{margin:1.6rem 0 0;font-size:.92rem;color:var(--t3);display:none;max-width:58ch}
 .status.on{display:block}
 .status.bad{color:var(--t2)}
-.status .btn{margin-top:1.2rem}
+.status p{margin:0}
+.status .btn{display:inline-flex;margin-top:1.3rem}
 
 .sent{display:none;text-align:center;padding:clamp(3rem,12vh,7rem) 0}
 .sent h2{margin-bottom:1.4rem}
@@ -470,4 +471,88 @@ input:focus,textarea:focus{
 @media (max-width:430px){
   .mark span{display:none}
   .nav-cta{padding:.7rem 1rem}
+}
+
+/* ================================================================== /admin/
+   A tool, not a page: no chamber behind it, no entrance, nothing to look at
+   that is not a brief. It borrows the palette and the type so it feels like
+   the same company, and borrows nothing else.                              */
+.admin{background:var(--void)}
+.adm{max-width:1180px;margin-inline:auto;padding:clamp(5.5rem,12vh,7.5rem) var(--gut) 5rem}
+.adm h1{font-size:clamp(1.9rem,3.4vw,2.9rem)}
+
+.linkish{
+  appearance:none;background:none;border:0;padding:0;color:inherit;font:inherit;
+  cursor:pointer;border-bottom:1px solid var(--line-soft);
+}
+
+.adm-gate{max-width:44ch}
+.adm-gate code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;color:var(--t2);
+}
+.adm-keyform{display:flex;flex-direction:column;gap:1.2rem;align-items:flex-start;margin-top:2.4rem}
+.adm-keyform .field{width:min(100%,34ch)}
+
+.adm-head{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1.5rem;
+  flex-wrap:wrap;margin-bottom:2rem;
+}
+.adm-filters{margin-bottom:1.8rem}
+
+.adm-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.adm-row{
+  display:grid;align-items:center;gap:.3rem 1.4rem;
+  grid-template-columns:8.5rem minmax(0,1.6fr) minmax(0,1fr) 7rem 6rem;
+  padding:1.05rem .9rem;border-bottom:1px solid var(--line-soft);
+  cursor:pointer;transition:background .25s var(--ease);
+}
+.adm-row:hover,.adm-row:focus-visible{background:rgba(255,255,255,.045);outline:0}
+.adm-row.is-new{box-shadow:inset 2px 0 0 #fff}
+.adm-row h3{font-size:1.02rem;font-family:var(--sans);font-weight:400;letter-spacing:0;
+            overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-row p{margin:0}
+.adm-who p{font-size:.82rem;color:var(--t4);margin-top:.18rem;
+           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-when{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--t5)}
+.adm-tags,.adm-money{font-size:.8rem;color:var(--t4);
+                     overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-state{
+  font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--t4);
+  justify-self:start;border:1px solid var(--line);border-radius:999px;padding:.3rem .7rem;
+}
+.adm-state[data-s=new]{background:#fff;color:var(--void);border-color:#fff}
+.adm-state[data-s=archived]{opacity:.45}
+.adm-empty{margin-top:2.5rem;color:var(--t5)}
+
+.adm-detail{max-width:74ch}
+.adm-backbtn{margin-bottom:2.4rem;padding:.7rem 1.2rem;font-size:11px}
+.adm-detail .lede{margin-top:1rem}
+.adm-detail .lede a{border-bottom:1px solid var(--line)}
+.adm-fields{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:1.1rem 2rem;margin:2.4rem 0;padding:1.6rem 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.adm-f dt{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--t5)}
+.adm-f dd{margin:.45rem 0 0;color:var(--t2);font-size:.94rem}
+.adm-detailtext{
+  white-space:pre-wrap;font-size:1.02rem;line-height:1.75;color:var(--t2);
+  border-left:1px solid var(--line);padding-left:1.4rem;margin-bottom:2.8rem;
+}
+.adm-notes{margin-bottom:2.4rem}
+.adm-actions{
+  display:flex;align-items:center;gap:1.6rem;flex-wrap:wrap;
+  border-top:1px solid var(--line);padding-top:1.8rem;
+}
+
+@media (max-width:900px){
+  /* The table collapses to a card. Budget and the tag list are the two things
+     worth losing first — they are both repeated on the brief itself. */
+  .adm-row{grid-template-columns:1fr auto;padding:1.1rem .2rem}
+  .adm-when{grid-column:1;order:1}
+  .adm-state{grid-column:2;grid-row:1;order:2;justify-self:end}
+  .adm-who{grid-column:1 / -1;order:3;margin-top:.2rem}
+  .adm-tags{grid-column:1 / -1;order:4;white-space:normal}
+  .adm-money{display:none}
+  .adm-head{align-items:flex-start}
 }

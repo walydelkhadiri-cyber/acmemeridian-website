@@ -1,0 +1,27 @@
+project_id = "slkyivycuxbjigwqpyzd"
+
+# Both functions are called from a static page that has no Supabase session, so
+# the platform's JWT gate would only ever reject them. Each one does its own
+# door: `brief` is deliberately public and defends itself with an origin
+# allow-list, caps, a honeypot and a rate limit; `admin` verifies the signed-in
+# user and checks for an admin role.
+[functions.brief]
+verify_jwt = false
+
+[functions.admin]
+verify_jwt = false
+
+# There is exactly one account on this project and it is created from the
+# command line. Leaving sign-up open would mean anyone on the internet could
+# make themselves a user; they still could not read a brief — the admin
+# function checks for an `admin` role that only the service key can grant — but
+# an account nobody meant to exist is not something to leave lying around.
+[auth]
+enable_signup = false
+site_url = "https://acmemeridian.com"
+additional_redirect_urls = ["https://acmemeridian.com/admin/"]
+
+[auth.email]
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = false

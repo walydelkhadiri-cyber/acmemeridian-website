@@ -13,7 +13,9 @@
    matches because the grade is the same grade.
    ========================================================================== */
 
-const ENDPOINT = 'https://formsubmit.co/ajax/walyd@acmemeridian.com';
+import { API } from './config.js';
+
+const ENDPOINT = API + '/brief';
 const MAILBOX  = 'walyd@acmemeridian.com';
 
 const root = document.documentElement;
@@ -50,8 +52,22 @@ if (reduced) {
 
 /* Somebody who submits without JS lands back here with ?sent=1, so both paths
    end on the same screen. */
-if (new URLSearchParams(location.search).get('sent') === '1') {
-  document.body.classList.add('done');
+const q = new URLSearchParams(location.search);
+if (q.get('sent') === '1') document.body.classList.add('done');
+
+/* The no-JS path can only speak through the URL it is redirected to. If it
+   came back with a problem, say so in words rather than leaving a query string
+   nobody reads. */
+const NOJS_ERR = {
+  invalid: 'Some required fields were missing or too short. Please fill them in and send again.',
+  rate: 'You’ve just sent us a brief — give it a moment before the next one.',
+  store: 'We couldn’t save that. Please try again, or email walyd@acmemeridian.com directly.',
+};
+if (q.get('err')) {
+  const el = document.getElementById('nojs-err');
+  el.textContent = NOJS_ERR[q.get('err')] || NOJS_ERR.store;
+  el.className = 'status on bad';
+  el.hidden = false;
 }
 
 const val = (n) => {
@@ -98,41 +114,43 @@ function validate() {
   return checks.every(Boolean);
 }
 
-/* Keys become the left column of the email we receive, so they are written as
-   headings rather than field names. */
+/* A record, not an email body: this goes into a table, and the notification is
+   composed on the other side from the same row the admin page reads. */
 function brief() {
   return {
-    _subject: 'Project brief — ' + (val('title') || 'untitled') + ' — ' + val('name'),
-    _template: 'table',
-    _captcha: 'false',
-    _replyto: val('email'),          /* Reply in the mail client answers them */
-    'Name': val('name'),
-    'Email': val('email'),
-    'Company': val('company') || '—',
-    'Where': val('country') || '—',
-    'Project is for': picked('forwho')[0] || '—',
-    'Project title': val('title'),
-    'Wants built': picked('build').join(', ') || '—',
-    'Stage': picked('stage')[0] || '—',
-    'The brief': val('detail'),
-    'Timeline': picked('timeline')[0] || '—',
-    'Budget': picked('budget')[0] || '—',
-    'Links': val('links') || '—',
-    'Sent from': location.href.split('?')[0],
+    name: val('name'),
+    email: val('email'),
+    company: val('company'),
+    country: val('country'),
+    for_who: picked('forwho')[0] || '',
+    title: val('title'),
+    wants: picked('build'),
+    stage: picked('stage')[0] || '',
+    detail: val('detail'),
+    timeline: picked('timeline')[0] || '',
+    budget: picked('budget')[0] || '',
+    links: val('links'),
   };
 }
+
+/* The same record, laid out for a human, for the fallback below. */
+const LABELS = [
+  ['name', 'Name'], ['email', 'Email'], ['company', 'Company'], ['country', 'Where'],
+  ['for_who', 'Project is for'], ['title', 'Project title'], ['wants', 'Wants built'],
+  ['stage', 'Stage'], ['detail', 'The brief'], ['timeline', 'Timeline'],
+  ['budget', 'Budget'], ['links', 'Links'],
+];
 
 /* If the request never lands — offline, blocked, the service down — the brief
    is not thrown away: it is handed back as a composed message the visitor can
    send from their own client. A form that fails silently is worse than none. */
 function mailtoFallback() {
   const b = brief();
-  const body = Object.keys(b)
-    .filter((k) => k[0] !== '_')
-    .map((k) => k + ': ' + b[k])
+  const body = LABELS
+    .map(([k, label]) => label + ': ' + (Array.isArray(b[k]) ? b[k].join(', ') : b[k] || '—'))
     .join('\n');
   return 'mailto:' + MAILBOX +
-    '?subject=' + encodeURIComponent(b._subject) +
+    '?subject=' + encodeURIComponent('Project brief — ' + (b.title || 'untitled') + ' — ' + b.name) +
     '&body=' + encodeURIComponent(body);
 }
 
@@ -160,22 +178,33 @@ form.addEventListener('submit', (e) => {
   fetch(ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(brief()),
+    body: JSON.stringify({ ...brief(), _honey: val('_honey') }),
   })
-    .then((r) => r.json().catch(() => ({})).then((j) => ({ ok: r.ok, j })))
-    .then(({ ok, j }) => {
-      if (!ok || String(j.success) === 'false') throw new Error(j.message || 'refused');
+    .then((r) => r.json().catch(() => ({})).then((j) => ({ ok: r.ok, status: r.status, j })))
+    .then(({ ok, status, j }) => {
+      if (!ok) throw Object.assign(new Error(j.error || 'refused'), { status, info: j });
       statusEl.className = 'status';
       document.body.classList.add('done');
       scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
     })
-    .catch(() => {
+    .catch((err) => {
       sending = false;
       sendBtn.disabled = false;
       sendBtn.querySelector('span').textContent = 'Send the brief';
+
+      /* Being told to slow down is not a failure, and offering an email escape
+         hatch to someone who has already sent three briefs would be wrong. */
+      if (err.status === 429) {
+        say('You&rsquo;ve just sent us a brief &mdash; give it a moment before the next one.', true);
+        return;
+      }
+      if (err.status === 422) {
+        say('Something in there was rejected. Check the marked fields and try again.', true);
+        return;
+      }
       say(
-        'That didn&rsquo;t go through &mdash; the connection or a blocker got in the way. ' +
-        'Nothing you wrote is lost: this opens it in your own mail app, ready to send.' +
+        '<p>That didn&rsquo;t go through &mdash; the connection or a blocker got in the way. ' +
+        'Nothing you wrote is lost: this opens it in your own mail app, ready to send.</p>' +
         '<a class="btn" href="' + mailtoFallback() + '"><span>Send it by email instead</span></a>',
         true
       );
