@@ -433,11 +433,32 @@ function code(W, H) {
   const u = W / 2048;
   const SB = 380 * u, ED = 1660 * u, BAR = 70 * u, ST = H - 62 * u;
 
-  /* --- window chrome ------------------------------------------------------- */
+  /* --- window chrome -------------------------------------------------------
+     This one is a native editor, not a browser, so it gets a window title bar
+     rather than a toolbar. But three dots on their own is a half-drawn window:
+     a real one carries the command centre in the middle and the layout
+     toggles on the right, so it gets those too. */
   fill(c, 0, 0, W, BAR, 0, '#141417');
   trafficLights(c, 46 * u, 35 * u, 9 * u);
-  t(c, 'reconcile.ts — ledger-service', W / 2, 42 * u,
-    { size: 21 * u, col: w(0.42), align: 'center' });
+
+  const cw2 = 620 * u, cx2 = (W - cw2) / 2;
+  fill(c, cx2, 16 * u, cw2, 38 * u, 8 * u, '#1d1d21');
+  c.strokeStyle = w(0.4); c.lineWidth = 2 * u; c.lineCap = 'round';
+  c.beginPath(); c.arc(cx2 + 28 * u, 33 * u, 7 * u, 0, 7); c.stroke();
+  c.beginPath();
+  c.moveTo(cx2 + 33 * u, 38 * u); c.lineTo(cx2 + 39 * u, 44 * u); c.stroke();
+  t(c, 'reconcile.ts — ledger-service', W / 2 + 14 * u, 41 * u,
+    { size: 20 * u, col: w(0.5), align: 'center' });
+
+  /* the three layout toggles: primary sidebar, panel, secondary sidebar */
+  [[1858, 'l'], [1912, 'b'], [1966, 'r']].forEach(([x, side]) => {
+    stroke(c, x * u, 21 * u, 38 * u, 28 * u, 4 * u, w(0.34), 2 * u);
+    c.fillStyle = w(0.34);
+    if (side === 'l') c.fillRect(x * u + 2 * u, 23 * u, 10 * u, 24 * u);
+    else if (side === 'r') c.fillRect(x * u + 26 * u, 23 * u, 10 * u, 24 * u);
+    else c.fillRect(x * u + 2 * u, 39 * u, 34 * u, 8 * u);
+  });
+  c.lineCap = 'butt';
 
   /* --- file tree ----------------------------------------------------------- */
   fill(c, 0, BAR, SB, ST - BAR, 0, '#0b0b0d');
