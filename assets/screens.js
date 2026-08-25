@@ -821,17 +821,148 @@ function dash(W, H) {
   return cv;
 }
 
+/* --------------------------------------------------------- SF-style glyphs
+   The phone screen is the one that has to survive being seen from across a
+   room, and five identical rounded squares in a tab bar is the tell that
+   nobody drew it. These are traced from the SF Symbols the app actually
+   names in its source — briefcase, figure.run, heart, moon.stars, banknote,
+   sparkles, square.grid.2x2, chart.bar, flame, gearshape. */
+function star4(c, x, y, r) {
+  c.beginPath();
+  c.moveTo(x, y - r);
+  c.quadraticCurveTo(x + r * 0.17, y - r * 0.17, x + r, y);
+  c.quadraticCurveTo(x + r * 0.17, y + r * 0.17, x, y + r);
+  c.quadraticCurveTo(x - r * 0.17, y + r * 0.17, x - r, y);
+  c.quadraticCurveTo(x - r * 0.17, y - r * 0.17, x, y - r);
+  c.closePath();
+}
+
+const SF = {
+  briefcase(c, x, y, s) {
+    stroke(c, x - s * 0.5, y - s * 0.26, s, s * 0.62, s * 0.1, c.strokeStyle, c.lineWidth);
+    c.beginPath();
+    c.moveTo(x - s * 0.2, y - s * 0.26); c.lineTo(x - s * 0.2, y - s * 0.44);
+    c.lineTo(x + s * 0.2, y - s * 0.44); c.lineTo(x + s * 0.2, y - s * 0.26);
+    c.stroke();
+  },
+  run(c, x, y, s) {
+    c.beginPath(); c.arc(x + s * 0.13, y - s * 0.35, s * 0.13, 0, 7); c.stroke();
+    c.beginPath();
+    c.moveTo(x + s * 0.15, y - s * 0.16); c.lineTo(x - s * 0.03, y + s * 0.05);
+    c.lineTo(x + s * 0.21, y + s * 0.42);
+    c.moveTo(x - s * 0.03, y + s * 0.05); c.lineTo(x - s * 0.27, y + s * 0.34);
+    c.moveTo(x + s * 0.07, y - s * 0.08); c.lineTo(x + s * 0.36, y - s * 0.02);
+    c.moveTo(x + s * 0.07, y - s * 0.08); c.lineTo(x - s * 0.24, y - s * 0.14);
+    c.stroke();
+  },
+  heart(c, x, y, s) {
+    c.beginPath();
+    c.moveTo(x, y + s * 0.38);
+    c.bezierCurveTo(x - s * 0.62, y - s * 0.02, x - s * 0.44, y - s * 0.46, x, y - s * 0.14);
+    c.bezierCurveTo(x + s * 0.44, y - s * 0.46, x + s * 0.62, y - s * 0.02, x, y + s * 0.38);
+    c.closePath(); c.stroke();
+  },
+  /* a stroked C is a letter; a thick one is a crescent */
+  moon(c, x, y, s) {
+    const lw = c.lineWidth;
+    c.lineWidth = s * 0.23; c.lineCap = 'round';
+    c.beginPath();
+    c.arc(x + s * 0.07, y + s * 0.02, s * 0.28, Math.PI * 0.44, Math.PI * 1.56);
+    c.stroke();
+    c.lineWidth = lw;
+    c.fillStyle = c.strokeStyle;
+    star4(c, x + s * 0.36, y - s * 0.34, s * 0.12); c.fill();
+    star4(c, x + s * 0.47, y - s * 0.02, s * 0.075); c.fill();
+  },
+  banknote(c, x, y, s) {
+    stroke(c, x - s * 0.52, y - s * 0.3, s * 1.04, s * 0.6, s * 0.08, c.strokeStyle, c.lineWidth);
+    c.beginPath(); c.arc(x, y, s * 0.15, 0, 7); c.stroke();
+  },
+  sparkles(c, x, y, s) {
+    c.fillStyle = c.strokeStyle;
+    star4(c, x - s * 0.08, y - s * 0.04, s * 0.38); c.fill();
+    star4(c, x + s * 0.33, y + s * 0.3, s * 0.17); c.fill();
+    star4(c, x + s * 0.3, y - s * 0.34, s * 0.12); c.fill();
+  },
+  grid(c, x, y, s) {
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([dx, dy]) => {
+      stroke(c, x + dx * s * 0.40 - s * 0.17, y + dy * s * 0.40 - s * 0.17,
+        s * 0.34, s * 0.34, s * 0.09, c.strokeStyle, c.lineWidth);
+    });
+  },
+  bars(c, x, y, s) {
+    c.beginPath();
+    [[-0.34, 0.32], [0, 0.56], [0.34, 0.82]].forEach(([dx, h]) => {
+      c.moveTo(x + dx * s, y + s * 0.42); c.lineTo(x + dx * s, y + s * 0.42 - h * s);
+    });
+    c.stroke();
+  },
+  /* the inner flame is what separates it from a water drop — the outline
+     alone is ambiguous at any size a tab bar allows */
+  flame(c, x, y, s) {
+    c.beginPath();
+    c.moveTo(x + s * 0.04, y - s * 0.50);
+    c.bezierCurveTo(x + s * 0.10, y - s * 0.22, x + s * 0.36, y - s * 0.10, x + s * 0.33, y + s * 0.14);
+    c.bezierCurveTo(x + s * 0.30, y + s * 0.38, x + s * 0.14, y + s * 0.50, x - s * 0.02, y + s * 0.50);
+    c.bezierCurveTo(x - s * 0.24, y + s * 0.50, x - s * 0.36, y + s * 0.34, x - s * 0.33, y + s * 0.12);
+    c.bezierCurveTo(x - s * 0.30, y - s * 0.06, x - s * 0.14, y - s * 0.02, x - s * 0.19, y - s * 0.24);
+    c.bezierCurveTo(x - s * 0.23, y - s * 0.42, x - s * 0.08, y - s * 0.44, x + s * 0.04, y - s * 0.50);
+    c.closePath(); c.stroke();
+    c.beginPath();
+    c.moveTo(x + s * 0.02, y + s * 0.01);
+    c.bezierCurveTo(x + s * 0.19, y + s * 0.15, x + s * 0.15, y + s * 0.40, x - s * 0.02, y + s * 0.40);
+    c.bezierCurveTo(x - s * 0.17, y + s * 0.40, x - s * 0.21, y + s * 0.21, x + s * 0.02, y + s * 0.01);
+    c.closePath(); c.stroke();
+  },
+  /* real teeth have flat tops; radial spokes make a sun, not a gearshape */
+  gear(c, x, y, s) {
+    const N = 7, ro = s * 0.50, ri = s * 0.35, step = (Math.PI * 2) / N / 4;
+    c.beginPath();
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * Math.PI * 2 - Math.PI / 2;
+      const nxt = ((i + 1) / N) * Math.PI * 2 - Math.PI / 2;
+      [[a - step * 1.05, ri], [a - step * 0.75, ro],
+       [a + step * 0.75, ro], [a + step * 1.05, ri]].forEach(([ang, r], k) => {
+        const px = x + Math.cos(ang) * r, py = y + Math.sin(ang) * r;
+        (i === 0 && k === 0) ? c.moveTo(px, py) : c.lineTo(px, py);
+      });
+      c.arc(x, y, ri, a + step * 1.05, nxt - step * 1.05);
+    }
+    c.closePath(); c.stroke();
+    c.beginPath(); c.arc(x, y, s * 0.15, 0, 7); c.stroke();
+  },
+  chevron(c, x, y, s) {
+    c.beginPath();
+    c.moveTo(x - s * 0.22, y - s * 0.4); c.lineTo(x + s * 0.2, y); c.lineTo(x - s * 0.22, y + s * 0.4);
+    c.stroke();
+  },
+  shareUp(c, x, y, s) {
+    c.beginPath();
+    c.moveTo(x, y + s * 0.16); c.lineTo(x, y - s * 0.46);
+    c.moveTo(x - s * 0.24, y - s * 0.22); c.lineTo(x, y - s * 0.46); c.lineTo(x + s * 0.24, y - s * 0.22);
+    c.moveTo(x - s * 0.36, y - s * 0.06); c.lineTo(x - s * 0.36, y + s * 0.46);
+    c.lineTo(x + s * 0.36, y + s * 0.46); c.lineTo(x + s * 0.36, y - s * 0.06);
+    c.stroke();
+  },
+};
+
 /* ==================================================================== 780 × 1690
-   04 · MOBILE APPLICATIONS — a training log, mid-workout.
-   Phones are held, so this one earns its density differently: thumb-sized
-   targets, one column, and state you can read at arm's length. The sets that
-   are done are filled and the ones that are not are outlined, which is the
-   entire product in one glance.
+   04 · MOBILE APPLICATIONS — Zenin, Today.
+   The other five screens on this floor are invented products, and they say so
+   in the caption. This one is not: it is our own shipped iOS app, drawn from
+   its own source — the header's day / date / month stack and completion ring,
+   the daily quote card, Compound Progress, the MANIFEST heading, the goal
+   cards with their pillar icon and streak, and the five real tabs. The goal
+   titles are the app's own starter templates and the pillars are its own
+   `LifePillar` cases; nothing here is dressed up.
+
+   The arithmetic holds, as everywhere else: two of five goals checked is the
+   40% on the ring and the 40% on the Daily row.
    ============================================================================ */
 function app(W, H) {
   const { cv, c } = canvas2d(W, H, '#08080a');
   const u = W / 780;
-  const M = 44 * u;
+  const M = 44 * u, R = W - M;
 
   /* --- status bar ---------------------------------------------------------- */
   t(c, '9:41', M, 46 * u, { size: 25 * u, weight: 500, col: w(0.92) });
@@ -846,117 +977,107 @@ function app(W, H) {
   stroke(c, W - 68 * u, 27 * u, 34 * u, 17 * u, 4 * u, w(0.5), 2 * u);
   fill(c, W - 65 * u, 30 * u, 24 * u, 11 * u, 2 * u, w(0.85));
 
-  /* --- header -------------------------------------------------------------- */
-  t(c, 'Tuesday', M, 148 * u, { size: 42 * u, col: w(0.96), serif: true });
-  t(c, 'Week 6 of 12 · Push / Pull / Legs', M, 184 * u, { size: 21 * u, col: w(0.38) });
-  c.beginPath(); c.arc(W - M - 34 * u, 142 * u, 34 * u, 0, 7);
-  c.strokeStyle = w(0.2); c.lineWidth = 3 * u; c.stroke();
+  /* --- header: day / date / month, and the completion ring ----------------- */
+  t(c, 'TUE', M, 126 * u, { size: 17 * u, ls: 3.4 * u, col: w(0.34) });
+  t(c, '25', M, 190 * u, { size: 56 * u, col: w(0.96), serif: true });
+  t(c, 'AUGUST 2026', M, 224 * u, { size: 16 * u, ls: 3 * u, col: w(0.42) });
+
+  const RR = 40 * u, RC = R - RR, RY = 168 * u, PROG = 0.4;
+  c.lineCap = 'round';
+  c.beginPath(); c.arc(RC, RY, RR, 0, 7);
+  c.strokeStyle = w(0.14); c.lineWidth = 5 * u; c.stroke();
   c.beginPath();
-  c.arc(W - M - 34 * u, 142 * u, 34 * u, -Math.PI / 2, -Math.PI / 2 + Math.PI * 1.5);
-  c.strokeStyle = w(0.75); c.lineWidth = 3 * u; c.stroke();
-  t(c, '18', W - M - 34 * u, 150 * u, { size: 26 * u, col: w(0.9), align: 'center' });
-  t(c, 'day streak', W - M - 34 * u, 200 * u, { size: 16 * u, col: w(0.34), align: 'center' });
-
-  /* --- segmented control --------------------------------------------------- */
-  const sy = 240 * u, sh = 58 * u, sw = (W - M * 2) / 3;
-  fill(c, M, sy, W - M * 2, sh, 12 * u, w(0.05));
-  ['Today', 'Week', 'History'].forEach((s, i) => {
-    if (i === 0) fill(c, M + 4 * u, sy + 4 * u, sw - 8 * u, sh - 8 * u, 10 * u, w(0.11));
-    t(c, s, M + sw * i + sw / 2, sy + 38 * u,
-      { size: 22 * u, col: w(i === 0 ? 0.92 : 0.42), align: 'center' });
-  });
-
-  /* --- weekly volume ------------------------------------------------------- */
-  /* seven rolling days ending today — so the bright bar is Tuesday, the same
-     day the header names, and its 5,240 kg is the session below */
-  t(c, 'VOLUME · LAST 7 DAYS', M, 356 * u, { size: 16 * u, ls: 3 * u, col: w(0.3) });
-  t(c, '23,140 kg', W - M, 356 * u, { size: 20 * u, col: w(0.7), align: 'right' });
-  const vols = [3.6, 0, 4.9, 5.2, 0, 4.2, 5.24], days = ['W', 'T', 'F', 'S', 'S', 'M', 'T'];
-  const vw = (W - M * 2) / 7, vb = vw * 0.42, vTop = 386 * u, vH = 92 * u, TODAY = 6;
-  vols.forEach((v, i) => {
-    const h = (v / 6) * vH, x = M + i * vw + (vw - vb) / 2;
-    if (h > 0) fill(c, x, vTop + vH - h, vb, h, 4 * u, w(i === TODAY ? 0.72 : 0.32));
-    else fill(c, x, vTop + vH - 5 * u, vb, 5 * u, 2.5 * u, w(0.09));
-    t(c, days[i], x + vb / 2, vTop + vH + 32 * u,
-      { size: 17 * u, col: w(i === TODAY ? 0.62 : 0.28), align: 'center' });
-  });
-
-  /* --- session ------------------------------------------------------------- */
-  line(c, M, 560 * u, W - M * 2, 0.08);
-  t(c, 'Push A', M, 618 * u, { size: 30 * u, col: w(0.94), serif: true });
-  t(c, '6 exercises · 52 min · 5,240 kg planned', M, 652 * u, { size: 19 * u, col: w(0.36) });
-  t(c, '2 / 6', W - M, 618 * u, { size: 22 * u, col: w(0.6), align: 'right' });
-
-  const ex = [
-    ['Bench press', '4 × 8', '72.5 kg', [1, 1, 1, 1]],
-    ['Incline DB press', '3 × 10', '28 kg', [1, 1, 1]],
-    ['Cable fly', '3 × 12', '17.5 kg', [1, 0, 0]],
-    ['Overhead press', '4 × 6', '45 kg', [0, 0, 0, 0]],
-    ['Lateral raise', '3 × 15', '10 kg', [0, 0, 0]],
-    ['Triceps rope', '3 × 12', '25 kg', [0, 0, 0]],
-  ];
-  ex.forEach(([name, sets, load, done], i) => {
-    const y = (694 + i * 122) * u, h = 106 * u;
-    const active = i === 2;
-    if (active) fill(c, M, y, W - M * 2, h, 14 * u, w(0.06));
-    else stroke(c, M, y, W - M * 2, h, 14 * u, w(0.07), 1.5 * u);
-    t(c, name, M + 26 * u, y + 46 * u, { size: 24 * u, col: w(active ? 0.94 : 0.78) });
-    t(c, sets + '  ·  ' + load, M + 26 * u, y + 80 * u, { size: 19 * u, col: w(0.38) });
-    done.forEach((d, k) => {
-      const px = W - M - 26 * u - (done.length - k) * 40 * u + 12 * u;
-      if (d) fill(c, px, y + h / 2 - 14 * u, 28 * u, 28 * u, 8 * u, w(0.66));
-      else stroke(c, px, y + h / 2 - 14 * u, 28 * u, 28 * u, 8 * u, w(0.16), 2 * u);
-    });
-  });
-
-  /* --- rest timer ---------------------------------------------------------- */
-  const ry = 1424 * u, rw = W - M * 2;
-  fill(c, M, ry, rw, 100 * u, 14 * u, w(0.05));
-  t(c, 'Rest', M + 26 * u, ry + 34 * u, { size: 17 * u, ls: 2 * u, col: w(0.4), caps: true });
-  t(c, '1:12', M + 26 * u, ry + 68 * u, { size: 27 * u, col: w(0.92), mono: true });
-  t(c, 'of 1:30', M + 122 * u, ry + 68 * u, { size: 18 * u, col: w(0.32) });
-  t(c, 'Skip', W - M - 26 * u, ry + 54 * u, { size: 21 * u, col: w(0.6), align: 'right' });
-  fill(c, M + 26 * u, ry + 82 * u, rw - 52 * u, 5 * u, 2.5 * u, w(0.08));
-  fill(c, M + 26 * u, ry + 82 * u, (rw - 52 * u) * 0.2, 5 * u, 2.5 * u, w(0.5));
-
-  /* --- tab bar ------------------------------------------------------------- */
-  line(c, 0, H - 128 * u, W, 0.1);
-  ['Today', 'Plan', 'Log', 'Stats', 'You'].forEach((s, i) => {
-    const x = (W / 5) * i + W / 10, on = i === 0, y = H - 98 * u, a = on ? 0.9 : 0.28;
-    c.strokeStyle = w(a); c.lineWidth = 2.2 * u; c.lineCap = 'round';
-    if (i === 0) {                                  /* a calendar page */
-      stroke(c, x - 13 * u, y + 2 * u, 26 * u, 24 * u, 4 * u, w(a), 2.2 * u);
-      c.beginPath(); c.moveTo(x - 13 * u, y + 10 * u); c.lineTo(x + 13 * u, y + 10 * u);
-      c.moveTo(x - 6 * u, y); c.lineTo(x - 6 * u, y + 4 * u);
-      c.moveTo(x + 6 * u, y); c.lineTo(x + 6 * u, y + 4 * u); c.stroke();
-    } else if (i === 1) {                           /* a plan: rows */
-      c.beginPath();
-      [0, 9, 18].forEach((d) => {
-        c.moveTo(x - 13 * u, y + 5 * u + d); c.lineTo(x + 13 * u, y + 5 * u + d);
-      });
-      c.stroke();
-    } else if (i === 2) {                           /* a log: a ticked box */
-      stroke(c, x - 13 * u, y + 1 * u, 26 * u, 26 * u, 5 * u, w(a), 2.2 * u);
-      c.beginPath();
-      c.moveTo(x - 6 * u, y + 14 * u); c.lineTo(x - 1 * u, y + 19 * u);
-      c.lineTo(x + 7 * u, y + 8 * u); c.stroke();
-    } else if (i === 3) {                           /* stats: three columns */
-      c.beginPath();
-      [[-9, 10], [0, 18], [9, 25]].forEach(([dx, h]) => {
-        c.moveTo(x + dx * u, y + 27 * u); c.lineTo(x + dx * u, y + 27 * u - h * u);
-      });
-      c.lineWidth = 3.4 * u; c.stroke(); c.lineWidth = 2.2 * u;
-    } else {                                        /* you: head and shoulders */
-      c.beginPath(); c.arc(x, y + 8 * u, 7 * u, 0, 7); c.stroke();
-      c.beginPath(); c.arc(x, y + 30 * u, 13 * u, Math.PI * 1.15, Math.PI * 1.85); c.stroke();
-    }
-    t(c, s, x, H - 52 * u, { size: 16 * u, col: w(on ? 0.9 : 0.32), align: 'center' });
-  });
+  c.arc(RC, RY, RR, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * PROG);
+  c.strokeStyle = w(0.82); c.lineWidth = 5 * u; c.stroke();
   c.lineCap = 'butt';
+  t(c, '40%', RC, RY + 10 * u, { size: 24 * u, col: w(0.94), align: 'center' });
+
+  /* --- the daily quote ----------------------------------------------------- */
+  const QY = 280 * u, QH = 170 * u;
+  fill(c, M, QY, R - M, QH, 18 * u, w(0.045));
+  t(c, '“', M + 28 * u, QY + 74 * u, { size: 68 * u, col: w(0.2), serif: true });
+  c.strokeStyle = w(0.34); c.lineWidth = 2.2 * u; c.lineJoin = 'round';
+  SF.shareUp(c, R - 44 * u, QY + 44 * u, 26 * u);
+  t(c, 'Discipline equals freedom.', M + 28 * u, QY + 110 * u,
+    { size: 27 * u, col: w(0.9), serif: true });
+  t(c, '— Jocko Willink', M + 28 * u, QY + 144 * u, { size: 17 * u, col: w(0.38) });
+
+  /* --- compound progress --------------------------------------------------- */
+  t(c, 'Compound Progress', M, 508 * u, { size: 22 * u, col: w(0.86) });
+  const bars = [['Daily', 0.40], ['Weekly', 0.76], ['Monthly', 0.68], ['Yearly', 0.54]];
+  bars.forEach(([label, v], i) => {
+    const y = (548 + i * 44) * u, bx = M + 116 * u, bw2 = R - 76 * u - bx;
+    t(c, label, M, y + 6 * u, { size: 18 * u, col: w(0.56) });
+    fill(c, bx, y - 4 * u, bw2, 7 * u, 3.5 * u, w(0.075));
+    fill(c, bx, y - 4 * u, bw2 * v, 7 * u, 3.5 * u, w(i ? 0.42 : 0.78));
+    t(c, Math.round(v * 100) + '%', R, y + 6 * u,
+      { size: 18 * u, col: w(i ? 0.5 : 0.8), align: 'right' });
+  });
+
+  /* --- the manifest heading, in the app's own words ------------------------ */
+  t(c, 'MANIFEST', M, 758 * u, { size: 15 * u, ls: 3.2 * u, col: w(0.3) });
+  t(c, 'Write it down.', M, 802 * u, { size: 31 * u, col: w(0.95), serif: true });
+  t(c, 'Manifest it.', M, 840 * u, { size: 31 * u, col: w(0.95), serif: true });
+  t(c, 'The goals you put into words are the ones you live out.', M, 876 * u,
+    { size: 16 * u, col: w(0.36) });
+
+  /* --- today's goals ------------------------------------------------------- */
+  const goals = [
+    ['Deep work for 1 hour', 'Career', 'briefcase', 12, 1],
+    ['Walk 8,000 steps', 'Sports & Health', 'run', 41, 1],
+    ['Drink 2L of water', 'Sports & Health', 'run', 23, 0],
+    ['Meditate 10 minutes', 'Spiritual', 'moon', 8, 0],
+    ['Call a loved one', 'Relationships', 'heart', 5, 0],
+  ];
+  goals.forEach(([title, pillar, icon, streak, done], i) => {
+    const y = (912 + i * 118) * u, h = 106 * u;
+    if (done) fill(c, M, y, R - M, h, 16 * u, w(0.055));
+    else stroke(c, M, y, R - M, h, 16 * u, w(0.075), 1.5 * u);
+
+    const cxk = M + 34 * u, cyk = y + h / 2;
+    if (done) {
+      c.beginPath(); c.arc(cxk, cyk, 17 * u, 0, 7); c.fillStyle = w(0.86); c.fill();
+      c.strokeStyle = '#0b0b0d'; c.lineWidth = 3 * u;
+      c.lineCap = 'round'; c.lineJoin = 'round';
+      c.beginPath();
+      c.moveTo(cxk - 7 * u, cyk); c.lineTo(cxk - 2 * u, cyk + 5 * u);
+      c.lineTo(cxk + 7.5 * u, cyk - 5.5 * u); c.stroke();
+      c.lineCap = 'butt';
+    } else {
+      c.beginPath(); c.arc(cxk, cyk, 17 * u, 0, 7);
+      c.strokeStyle = w(0.18); c.lineWidth = 2.2 * u; c.stroke();
+    }
+
+    t(c, title, M + 66 * u, y + 46 * u, { size: 23 * u, col: w(done ? 0.6 : 0.93) });
+    c.strokeStyle = w(0.34); c.lineWidth = 1.8 * u;
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    SF[icon](c, M + 76 * u, y + 72 * u, 20 * u);
+    c.lineCap = 'butt';
+    t(c, pillar, M + 96 * u, y + 79 * u, { size: 16 * u, col: w(0.34) });
+
+    t(c, String(streak), R - 54 * u, y + 48 * u,
+      { size: 21 * u, col: w(0.72), align: 'right' });
+    t(c, 'days', R - 54 * u, y + 74 * u, { size: 14 * u, col: w(0.32), align: 'right' });
+    c.strokeStyle = w(0.24); c.lineWidth = 2.2 * u;
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    SF.chevron(c, R - 22 * u, cyk, 18 * u);
+    c.lineCap = 'butt';
+  });
+
+  /* --- the five real tabs -------------------------------------------------- */
+  line(c, 0, H - 128 * u, W, 0.1);
+  [['Today', 'grid'], ['Goals', 'bars'], ['Coach', 'sparkles'],
+   ['Streak', 'flame'], ['Settings', 'gear']].forEach(([label, icon], i) => {
+    const x = (W / 5) * i + W / 10, on = i === 0, a = on ? 0.9 : 0.3;
+    c.strokeStyle = w(a); c.lineWidth = 2.2 * u;
+    c.lineCap = 'round'; c.lineJoin = 'round';
+    SF[icon](c, x, H - 86 * u, 26 * u);
+    c.lineCap = 'butt';
+    t(c, label, x, H - 50 * u, { size: 15 * u, col: w(on ? 0.9 : 0.34), align: 'center' });
+  });
   fill(c, W / 2 - 70 * u, H - 22 * u, 140 * u, 6 * u, 3 * u, w(0.35));
   return cv;
 }
-
 /* =================================================================== 1600 × 1200
    05 · BUSINESS DIGITALIZATION — the board that replaced the whiteboard.
    Every card carries a reference, a customer, a value and a date, because the

@@ -222,6 +222,14 @@ p{margin:0 0 1.05em}
 .deck h3{margin-bottom:.7rem}
 .deck p{color:var(--t3);margin:0}
 
+/* Which screens are real. The interfaces are now detailed enough to be taken
+   for clients' products, so the ones that are invented say so and the one
+   that is ours is named. Quiet type, but not optional.                     */
+.deck .screen-note{
+  margin:1.15rem 0 0;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--t5);line-height:2;max-width:40ch;
+}
+
 .tabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:0 0 1.6rem;width:max-content;max-width:52ch}
 .tab{
   appearance:none;background:rgba(255,255,255,.04);color:var(--t4);
@@ -625,4 +633,8 @@ input:focus,textarea:focus{
   .chapter--end .mailto a{font-size:clamp(1.1rem,min(2.6vw,5vh),1.7rem)}
   .chapter--end .btn{margin-top:1rem}
   .chapter--end .fine{display:none}      /* the footer says this again verbatim */
+}
+
+@media (max-height:600px) and (min-width:560px){
+  .deck .screen-note{display:none}
 }
