@@ -1017,6 +1017,137 @@ const clock = new THREE.Clock();
 const swayCur = new THREE.Vector2();
 let elapsed = 0;
 
+
+/* ==================================================================== intro
+   The room does not switch on; it comes up. Exposure and vignette open from
+   near-black while the camera settles the last few metres forward, and the
+   copy arrives only once there is something behind it to read against. It
+   costs a second and a half and no page length at all.
+
+   Skipped outright for a deep link, a reload part-way down, or a visitor who
+   has asked for less motion — in all three the answer they want is the frame
+   they asked for, immediately.                                              */
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* Driven off the wall clock, not off accumulated frame deltas. The copy is
+   gated on this, so a loop that stutters — a slow first compile, a throttled
+   background tab, a device that drops frames — must never be able to leave
+   the headline permanently invisible. Wall time only ever moves forward, so
+   the worst case is that the entrance is already over by the first frame. */
+const REVEAL = { t0: performance.now(), dur: 1550 };
+const INTRO = { k: (REDUCED || pinned !== null || scrollY > 40) ? 1 : 0 };
+
+/* ============================================================= look closer
+   The screens are painted at roughly seven times the size they are seen at,
+   which at the distance the camera keeps makes them about four pixels of
+   type — an impression of software rather than anything anyone can read.
+   This is the way in: the camera leaves its curve, squares up to the screen
+   along the screen's own normal, and frames it whole.
+
+   The grade comes down with it. A screen lit to glow in a dark room is a
+   white rectangle from close range, so exposure, bloom and aberration all
+   drop as the camera arrives — otherwise "look closer" shows you less.      */
+const POST_BASE = {
+  exp: compMat.uniforms.uExp.value, bloom: compMat.uniforms.uBloom.value,
+  vig: compMat.uniforms.uVig.value, ca: compMat.uniforms.uCA.value,
+};
+const POST_READ = { exp: 0.66, bloom: 0.085, vig: 0.24, ca: 0.00018 };
+
+const INSPECT = {
+  on: false, k: 0, dev: null,
+  pos: new THREE.Vector3(), look: new THREE.Vector3(),
+};
+const _n = new THREE.Vector3(), _sc = new THREE.Vector3();
+const _qt = new THREE.Quaternion(), _lt = new THREE.Vector3(), _dir = new THREE.Vector3();
+const lerp = (a, b, k) => a + (b - a) * k;
+const ease = (k) => k * k * (3 - 2 * k);
+
+/* Solve the stand-off from whichever of the plane's two dimensions binds
+   against the current aspect, then sit on the screen's own normal so the
+   read is square rather than oblique — the lid is hinged, so "in front of
+   the laptop" is not the same direction as "in front of the tablet". */
+function framePose(d) {
+  const scr = d.screen;
+  scr.updateWorldMatrix(true, false);
+  scr.matrixWorld.decompose(INSPECT.look, _qt, _sc);
+  const g = scr.geometry.parameters;
+  const halfV = Math.tan((camera.fov * DEG) / 2);
+  const distH = (g.height * _sc.y) / 2 / halfV;
+  const distW = (g.width * _sc.x) / 2 / (halfV * (W / H));
+  _n.set(0, 0, 1).applyQuaternion(_qt).normalize();
+  /* 1.18 rather than a bare fit: a screen touching the frame edge reads as
+     cropped, and the margin also absorbs the last percent of the blend */
+  INSPECT.pos.copy(INSPECT.look).addScaledVector(_n, Math.max(distH, distW) * 1.18);
+}
+
+const raycaster = new THREE.Raycaster();
+const _ndc = new THREE.Vector2();
+const screenMeshes = () => Object.values(devices).map((d) => d.screen);
+
+function deviceUnder(x, y) {
+  if (!W || !H) return null;
+  _ndc.set((x / W) * 2 - 1, -(y / H) * 2 + 1);
+  raycaster.setFromCamera(_ndc, camera);
+  const hit = raycaster.intersectObjects(screenMeshes(), false)[0];
+  return hit ? Object.values(devices).find((d) => d.screen === hit.object) || null : null;
+}
+
+function openInspect(d) {
+  if (!d || INSPECT.on || WARP.on) return;
+  INSPECT.on = true;
+  INSPECT.dev = d;
+  document.documentElement.classList.add('inspecting');
+}
+function closeInspect() {
+  if (!INSPECT.on) return;
+  INSPECT.on = false;
+  document.documentElement.classList.remove('inspecting');
+}
+
+/* `?peek=laptop|phone|tablet` opens straight into the read, the same way
+   `?t=` pins the timeline — the framing is solved from the screen's own
+   transform, so it is the one thing worth being able to capture directly. */
+{
+  const want = new URLSearchParams(location.search).get('peek');
+  if (want && devices[want]) requestAnimationFrame(() => {
+    openInspect(devices[want]);
+    INSPECT.k = 1;            /* arrive, rather than set off — this is for capture */
+  });
+}
+
+/* the control in the deck, for anyone who does not think to click a render */
+document.querySelectorAll('[data-peek]').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const ch = btn.closest('.chapter');
+    const on = ch && ch.querySelector('.tab.on, .tab');
+    const entry = on && TAB_SCREEN[on.dataset.tab];
+    openInspect(entry ? devices[entry[0]] : null);
+  });
+});
+
+addEventListener('click', (e) => {
+  if (INSPECT.on) { closeInspect(); return; }
+  if (e.target.closest && e.target.closest('a,button')) return;
+  openInspect(deviceUnder(e.clientX, e.clientY));
+});
+
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInspect(); });
+
+/* leaving by scrolling is the reflex, but a trackpad's momentum would throw
+   you out the instant you arrived — so it takes a deliberate push */
+addEventListener('wheel', (e) => {
+  if (INSPECT.on && Math.abs(e.deltaY) > 14) closeInspect();
+}, { passive: true });
+addEventListener('touchmove', () => closeInspect(), { passive: true });
+
+/* a render that can be opened should say so under the cursor */
+addEventListener('pointermove', (e) => {
+  if (INSPECT.on || e.pointerType !== 'mouse') return;
+  const hit = deviceUnder(e.clientX, e.clientY);
+  document.documentElement.classList.toggle('over-device', !!hit);
+}, { passive: true });
+
+
 function frame() {
   requestAnimationFrame(frame);
   const dt = Math.min(0.05, clock.getDelta());
@@ -1027,6 +1158,10 @@ function frame() {
 
   camCurve.getPoint(t, _p);
   lookCurve.getPoint(t, _l);
+
+  if (INTRO.k < 1) INTRO.k = clamp((performance.now() - REVEAL.t0) / REVEAL.dur, 0, 1);
+  INSPECT.k = damp(INSPECT.k, INSPECT.on ? 1 : 0, REDUCED ? 30 : 4.0, dt);
+  if (INSPECT.k > 0.0004 && INSPECT.dev) framePose(INSPECT.dev);
 
   swayCur.x = damp(swayCur.x, RIG.sway.x, 2.2, dt);
   swayCur.y = damp(swayCur.y, RIG.sway.y, 2.2, dt);
@@ -1053,20 +1188,50 @@ function frame() {
        underneath, so the paint does not change across the navigation */
     if (WARP.t >= 1 && !WARP.gone) { WARP.gone = true; location.href = WARP.href; }
   } else {
+    /* the hand-held sway is charm on the curve and a wobble at reading
+       distance, so it is bled out as the inspect pose takes over */
+    const rk = ease(clamp(INSPECT.k, 0, 1)), hand = 1 - rk;
     camera.position.set(
-      _p.x + swayCur.x * 0.5 + Math.sin(elapsed * 0.31) * 0.11,
-      _p.y - swayCur.y * 0.32 + Math.sin(elapsed * 0.44 + 1.2) * 0.08,
+      _p.x + (swayCur.x * 0.5 + Math.sin(elapsed * 0.31) * 0.11) * hand,
+      _p.y + (-swayCur.y * 0.32 + Math.sin(elapsed * 0.44 + 1.2) * 0.08) * hand,
       _p.z
     );
     /* The look curve is composed for a landscape frame: the object sits right of
        centre so the copy owns the left. A portrait phone has no left column, so
        re-centre the object and lift it above the copy band instead. */
     const wide = W / H >= 0.9;
-    camera.lookAt(
-      _l.x + (wide ? 0 : 1.0) + swayCur.x * 0.55,
-      _l.y - (wide ? 0 : 1.15) - swayCur.y * 0.4,
+    _lt.set(
+      _l.x + (wide ? 0 : 1.0) + swayCur.x * 0.55 * hand,
+      _l.y - (wide ? 0 : 1.15) - swayCur.y * 0.4 * hand,
       _l.z
     );
+    if (rk > 0) {
+      camera.position.lerp(INSPECT.pos, rk);
+      _lt.lerp(INSPECT.look, rk);
+    }
+    /* the last few metres of the entrance, travelled backwards */
+    if (INTRO.k < 1) {
+      _dir.subVectors(camera.position, _lt).normalize();
+      camera.position.addScaledVector(_dir, (1 - ease(INTRO.k)) * 4.2);
+    }
+    camera.lookAt(_lt);
+
+    let exp = lerp(POST_BASE.exp, POST_READ.exp, rk);
+    let bloom = lerp(POST_BASE.bloom, POST_READ.bloom, rk);
+    let vig = lerp(POST_BASE.vig, POST_READ.vig, rk);
+    const ca = lerp(POST_BASE.ca, POST_READ.ca, rk);
+    if (INTRO.k < 1) {
+      const ik = ease(INTRO.k);
+      /* squared, so it holds in the dark and then opens — a linear ramp
+         reads as a dimmer being turned rather than a room waking up */
+      exp = lerp(0.13, exp, INTRO.k * INTRO.k);
+      vig = lerp(1.04, vig, ik);
+      bloom = lerp(bloom * 1.75, bloom, ik);
+    }
+    compMat.uniforms.uExp.value = exp;
+    compMat.uniforms.uBloom.value = bloom;
+    compMat.uniforms.uVig.value = vig;
+    compMat.uniforms.uCA.value = ca;
   }
 
   lantern.position.set(camera.position.x, camera.position.y + 1.5, camera.position.z - 4);
@@ -1074,14 +1239,22 @@ function frame() {
   ring.rotation.z += dt * 0.06;
   ringGlow.rotation.z = ring.rotation.z;
   monoSign.position.y = 10.6 + Math.sin(elapsed * 0.5) * 0.18;
-  devices.phone.group.rotation.y = 16 * DEG + Math.sin(elapsed * 0.28) * 0.09;
-  devices.tablet.group.rotation.y = -16 * DEG + Math.sin(elapsed * 0.22 + 2) * 0.07;
-  devices.laptop.group.rotation.y = 14 * DEG + Math.sin(elapsed * 0.2 + 4) * 0.05;
+  /* the idle drift is what keeps an object from looking like a still; at
+     reading distance it is the camera chasing a moving target, so it is
+     bled out exactly as the inspect pose takes hold */
+  const idle = 1 - ease(clamp(INSPECT.k, 0, 1));
+  devices.phone.group.rotation.y = 16 * DEG + Math.sin(elapsed * 0.28) * 0.09 * idle;
+  devices.tablet.group.rotation.y = -16 * DEG + Math.sin(elapsed * 0.22 + 2) * 0.07 * idle;
+  devices.laptop.group.rotation.y = 14 * DEG + Math.sin(elapsed * 0.2 + 4) * 0.05 * idle;
   DUST.rotation.y = elapsed * 0.004;
 
   /* chapters ------------------------------------------------------------- */
+  /* the copy waits for the room on the way in, and steps out of the way
+     while a screen is being read */
+  const gate = smoothstep(0.42, 0.94, INTRO.k) *
+               (1 - smoothstep(0.04, 0.5, clamp(INSPECT.k, 0, 1)));
   for (const ch of chapters) {
-    const k = smoothstep(ch.span, ch.span * 0.34, Math.abs(t - ch.at));
+    const k = smoothstep(ch.span, ch.span * 0.34, Math.abs(t - ch.at)) * gate;
     if (Math.abs(k - ch.shown) > 0.004) {
       ch.el.style.opacity = k.toFixed(3);
       ch.el.style.transform = `translateY(${((1 - k) * 26).toFixed(2)}px)`;
@@ -1121,15 +1294,21 @@ function frame() {
   compMat.uniforms.tB3.value = pyramid[3].a.texture;
   compMat.uniforms.uTime.value = elapsed;
   draw(compMat, null);
-  painted = true;
+  if (!painted) { painted = true; requestAnimationFrame(markReady); }
 }
 
-document.documentElement.classList.add('ready');
+/* `.ready` drives the chrome's own fade, so it has to land on a frame the
+   browser has actually painted — set in the same task as `.gl` there is no
+   start value to transition from and the fade never runs. The timeout is the
+   belt: if the loop dies, the nav must still appear. */
+function markReady() { document.documentElement.classList.add('ready'); }
+setTimeout(markReady, 2200);
 frame();
 
 
 /* exposed for tuning from the console while the look is being dialled in */
 window.MERIDIAN = { scene, camera, renderer, compMat, RIG, devices, camCurve, lookCurve,
+  INSPECT, INTRO, openInspect, closeInspect,
                     WARP, beginWarp };
 
 trackNavHeight();
