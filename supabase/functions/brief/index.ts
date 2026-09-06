@@ -22,7 +22,11 @@ const CAP = {
   title: 200, stage: 80, detail: 8000, timeline: 60, budget: 60, links: 600,
 };
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+/* `[^\s@]+` accepts a double quote and a slash, which is enough to break out
+   of an HTML attribute downstream. Deliberately narrower than RFC 5321: it
+   still takes every address a client will realistically type, including
+   plus-addressing and apostrophes. */
+const EMAIL_RE = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64}@[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$/;
 
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) =>

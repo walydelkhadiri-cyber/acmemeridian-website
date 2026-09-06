@@ -11,6 +11,10 @@
    a daily login; the access token is short-lived and held in memory only. Sign
    out clears both and revokes the session server-side.
    ========================================================================== */
+
+/* `frame-ancestors` cannot be set from a meta tag and GitHub Pages serves no
+   headers, so the admin refuses to run inside someone else's frame here. */
+if (self !== top) { top.location = self.location; throw new Error('framed'); }
 import { SUPABASE_URL, ANON_KEY, API } from './config.js';
 import { trackNavHeight } from './chrome.js';
 
@@ -147,7 +151,7 @@ function render() {
       </div>
       <p class="adm-tags">${(b.wants || []).slice(0, 3).map(esc).join(' · ') || '—'}</p>
       <p class="adm-money">${esc(b.budget || '—')}</p>
-      <p class="adm-state" data-s="${b.status}">${b.status}</p>`;
+      <p class="adm-state" data-s="${esc(b.status)}">${esc(b.status)}</p>`;
     const open = () => openBrief(b.id);
     li.addEventListener('click', open);
     li.addEventListener('keydown', (e) => {
@@ -201,7 +205,13 @@ async function openBrief(id) {
   const subject = `Re: ${b.title}`;
   /* the address goes in raw — percent-encoding the @ is legal but some mail
      clients show it back to you literally */
-  const mailto = `mailto:${b.email}?subject=${encodeURIComponent(subject)}`;
+  /* The submitter chooses this address, so it is hostile input landing in an
+     HTML attribute. `esc` alone would do, but percent-encoding the local part
+     as well means the value cannot carry a quote even if this string is ever
+     used somewhere that does not escape. `@` is put back so the link stays
+     legible in the status bar. */
+  const mailAddr = encodeURIComponent(b.email).replace(/%40/g, '@');
+  const mailto = `mailto:${mailAddr}?subject=${encodeURIComponent(subject)}`;
 
   detail.innerHTML = `
     <button class="btn adm-backbtn" type="button" id="back"><span>&larr; All briefs</span></button>
@@ -209,7 +219,7 @@ async function openBrief(id) {
     <p class="eyebrow">${fmtDate(b.created_at)} &middot; ${esc(b.status)}</p>
     <h1>${esc(b.title)}</h1>
     <p class="lede">${esc(b.name)}${b.company ? ' · ' + esc(b.company) : ''}<br>
-      <a href="${mailto}">${esc(b.email)}</a></p>
+      <a href="${esc(mailto)}">${esc(b.email)}</a></p>
 
     <dl class="adm-fields">
       ${field('Wants built', (b.wants || []).join(', '))}
@@ -231,7 +241,7 @@ async function openBrief(id) {
     </div>
 
     <div class="adm-actions">
-      <a class="btn solid" href="${mailto}"><span>Reply</span></a>
+      <a class="btn solid" href="${esc(mailto)}"><span>Reply</span></a>
       <div class="choices">
         ${['new', 'read', 'replied', 'archived'].map((s) => `
           <label class="choice"><input type="radio" name="st" value="${s}"${b.status === s ? ' checked' : ''}><span>${s}</span></label>`).join('')}
