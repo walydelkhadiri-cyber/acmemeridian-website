@@ -1,5 +1,76 @@
+# acmemeridian.com
+#
+# Every search and answer engine is welcome. Two kinds of robot come here:
+# the ones that build a search index and cite pages in answers, and the ones
+# that collect text to train models. Both are allowed on purpose — a company
+# that wants to be named in an AI answer has to let the AI read its name.
+#
+# What each one is for, from the vendors' own documentation:
+#   Googlebot          Google Search, AI Overviews and AI Mode (one crawler)
+#   Google-Extended    lets Gemini train on the content; does not affect Search
+#   OAI-SearchBot      ChatGPT search citations — blocking it removes the site
+#                      from ChatGPT answers (developers.openai.com/api/docs/bots)
+#   GPTBot             OpenAI model training
+#   Claude-SearchBot   Claude web search index; ClaudeBot is training
+#   PerplexityBot      Perplexity index — blocked pages still show as a bare
+#                      headline with no content
+#   Bingbot            Bing, Microsoft Copilot, and the index ChatGPT search
+#                      draws on
+#   Applebot           Siri and Apple Intelligence search; Applebot-Extended
+#                      only governs training and crawls nothing itself
+#   Meta-ExternalAgent Meta AI index and training
+#
+# The only thing kept out of every index is the private triage page.
+# Disallow is listed before Allow in every group on purpose: Google picks
+# the longest matching rule, but first-match parsers exist, and in those an
+# Allow: / listed first would swallow the Disallow beneath it.
+
 User-agent: *
-Allow: /
 Disallow: /admin/
+Allow: /
+
+User-agent: Googlebot
+Disallow: /admin/
+Allow: /
+
+User-agent: Google-Extended
+Disallow: /admin/
+Allow: /
+
+User-agent: OAI-SearchBot
+Disallow: /admin/
+Allow: /
+
+User-agent: GPTBot
+Disallow: /admin/
+Allow: /
+
+User-agent: Claude-SearchBot
+Disallow: /admin/
+Allow: /
+
+User-agent: ClaudeBot
+Disallow: /admin/
+Allow: /
+
+User-agent: PerplexityBot
+Disallow: /admin/
+Allow: /
+
+User-agent: Bingbot
+Disallow: /admin/
+Allow: /
+
+User-agent: Applebot
+Disallow: /admin/
+Allow: /
+
+User-agent: Applebot-Extended
+Disallow: /admin/
+Allow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /admin/
+Allow: /
 
 Sitemap: https://acmemeridian.com/sitemap.xml

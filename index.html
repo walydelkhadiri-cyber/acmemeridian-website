@@ -29,13 +29,183 @@
 <link rel="stylesheet" href="/meridian.css">
 
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Acme Meridian LLC",
- "alternateName":"Acme Meridian","url":"https://acmemeridian.com/",
- "logo":"https://acmemeridian.com/assets/logo.png",
- "email":"walyd@acmemeridian.com",
- "description":"Software company registered in Wyoming, USA. Web platforms, mobile apps, SaaS products and AI systems.",
- "founder":{"@type":"Person","name":"Walyd El Khadiri","jobTitle":"CEO & Founder"},
- "address":{"@type":"PostalAddress","addressRegion":"WY","addressCountry":"US"}}
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "Organization",
+   "@id": "https://acmemeridian.com/#organization",
+   "name": "Acme Meridian LLC",
+   "alternateName": "Acme Meridian",
+   "legalName": "Acme Meridian LLC",
+   "url": "https://acmemeridian.com/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://acmemeridian.com/assets/logo.png"
+   },
+   "image": "https://acmemeridian.com/assets/og-cover.png",
+   "email": "walyd@acmemeridian.com",
+   "description": "Acme Meridian is a software company registered in Wyoming, USA. It designs, engineers and ships web platforms, custom software, SaaS products, native mobile apps and AI systems for businesses, end to end, with one team accountable for the result.",
+   "slogan": "We build the software your business runs on.",
+   "foundingLocation": {
+    "@type": "Place",
+    "address": {
+     "@type": "PostalAddress",
+     "addressRegion": "Wyoming",
+     "addressCountry": "US"
+    }
+   },
+   "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "WY",
+    "addressCountry": "US"
+   },
+   "areaServed": "Worldwide",
+   "founder": {
+    "@type": "Person",
+    "@id": "https://acmemeridian.com/#founder",
+    "name": "Walyd El Khadiri",
+    "jobTitle": "CEO & Founder",
+    "worksFor": {
+     "@id": "https://acmemeridian.com/#organization"
+    }
+   },
+   "contactPoint": [
+    {
+     "@type": "ContactPoint",
+     "contactType": "sales",
+     "email": "walyd@acmemeridian.com",
+     "url": "https://acmemeridian.com/start/",
+     "availableLanguage": "en"
+    }
+   ],
+   "knowsAbout": [
+    "Swift",
+    "SwiftUI",
+    "TypeScript",
+    "React",
+    "Next.js",
+    "Node.js",
+    "Python",
+    "PostgreSQL",
+    "Cloudflare",
+    "AWS",
+    "Stripe",
+    "Docker",
+    "CI/CD",
+    "Web platforms",
+    "Custom software development",
+    "SaaS products",
+    "iOS and Android app development",
+    "AI and automation",
+    "Business digitalization"
+   ],
+   "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Capabilities",
+    "itemListElement": [
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
+       "name": "Web Platforms",
+       "description": "Sites, portals and commerce that load instantly, rank, and convert. Designed and engineered in-house.",
+       "provider": {
+        "@id": "https://acmemeridian.com/#organization"
+       },
+       "areaServed": "Worldwide"
+      }
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
+       "name": "Custom Software Development",
+       "description": "Bespoke systems built around your operation instead of a template. Architecture, engineering and long-term ownership.",
+       "provider": {
+        "@id": "https://acmemeridian.com/#organization"
+       },
+       "areaServed": "Worldwide"
+      }
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
+       "name": "SaaS Products",
+       "description": "From an idea to a product people pay for: multi-tenancy, auth, billing, analytics, and the release pipeline that keeps it shipping.",
+       "provider": {
+        "@id": "https://acmemeridian.com/#organization"
+       },
+       "areaServed": "Worldwide"
+      }
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
+       "name": "Mobile Applications",
+       "description": "Native iOS and Android apps, designed and engineered in-house — through store review, subscriptions and the release cadence that comes after launch.",
+       "provider": {
+        "@id": "https://acmemeridian.com/#organization"
+       },
+       "areaServed": "Worldwide"
+      }
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
+       "name": "AI & Automation",
+       "description": "Assistants, document intelligence and automation built into real workflows, with evaluation and guardrails.",
+       "provider": {
+        "@id": "https://acmemeridian.com/#organization"
+       },
+       "areaServed": "Worldwide"
+      }
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "Service",
+       "name": "Business Digitalization",
+       "description": "Paper, spreadsheets and manual handoffs turned into software that runs itself — wired into the tools your team already uses.",
+       "provider": {
+        "@id": "https://acmemeridian.com/#organization"
+       },
+       "areaServed": "Worldwide"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "@type": "WebSite",
+   "@id": "https://acmemeridian.com/#website",
+   "url": "https://acmemeridian.com/",
+   "name": "Acme Meridian",
+   "publisher": {
+    "@id": "https://acmemeridian.com/#organization"
+   },
+   "inLanguage": "en"
+  },
+  {
+   "@type": "WebPage",
+   "@id": "https://acmemeridian.com/#webpage",
+   "url": "https://acmemeridian.com/",
+   "isPartOf": {
+    "@id": "https://acmemeridian.com/#website"
+   },
+   "about": {
+    "@id": "https://acmemeridian.com/#organization"
+   },
+   "name": "Acme Meridian — We build the software your business runs on",
+   "description": "Acme Meridian LLC is a software company registered in Wyoming, USA. We design, engineer and ship web platforms, mobile apps, SaaS products and AI systems — end to end.",
+   "primaryImageOfPage": "https://acmemeridian.com/assets/og-cover.png",
+   "inLanguage": "en"
+  }
+ ]
+}
 </script>
 </head>
 <body>
