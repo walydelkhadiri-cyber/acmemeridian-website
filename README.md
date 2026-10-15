@@ -2,78 +2,67 @@
 
 The public website for **Acme Meridian LLC** — a Wyoming software company.
 
-Plain HTML, CSS and JavaScript. **No build step, no npm, no dependencies.** Edit a
-file, commit, push — GitHub Pages serves it.
+Plain HTML, CSS and JavaScript. **No build step, no npm.** The few libraries are
+vendored in `assets/vendor/`. Edit a file, commit, push — GitHub Pages serves it.
 
 ## Structure
 
 ```
-index.html          the home page — one WebGL camera move, driven by scroll
-meridian.css        the home page's design system and chapter layout
-assets/world.js     the scene: procedural concrete, the rig, the post chain
-assets/screens.js   the artwork painted onto the device screens
-assets/screens/     drop-in replacements for that artwork (see its README)
+index.html          the home page — "Meridian Night": one scroll story, eight scenes
+start/              the project brief — four questions, one per screen
+assets/silk.js      the Three.js silk (shared by the home card and the brief card)
+assets/vendor/      three.js, GSAP + ScrollTrigger, Lenis — vendored, no CDN
+assets/fonts/       Mona Sans, self-hosted (night.css), plus the legal pages' fonts
+admin/ + admin.js   the private brief inbox (Supabase auth)
 styles.css          design system for the legal pages
 app.js              reveals, menu, copy-to-clipboard — legal pages only
+meridian.css        the admin page's styles (and the previous home page's)
 privacy/ terms/ legal/   legal pages (clean URLs via folders)
-assets/             icons, OG cover, fonts, the card as SVG
 downloads/          the business card PDFs and the vCard
 tools/              generators — only needed when regenerating assets
 CNAME               acmemeridian.com
 ```
 
-`styles.css` and `meridian.css` are deliberately separate: the legal pages load
-`styles.css`, so the home page could not take that filename without breaking them.
+The previous home page (the WebGL corridor, `world.js`, `screens.js`) is kept at
+the git tag `v2-corridor`.
 
 ## The home page
 
-One camera move down an architectural void. Scroll position drives a
-`CatmullRomCurve3`; everything the site says is placed along that line — the mark,
-a luminous ring, the three devices on plinths, the method as one rail marked five
-times, contact. Chapters are HTML pinned over the frame, so the copy stays
-selectable and indexable.
+The palette is the logo's: a `#151515` square and a white monogram, with the
+cobalt of the silk as the only accent. No serif, no italic accent words — every
+headline is one typeface, one colour.
 
-Nothing is tone-mapped by three.js. The scene renders linear into a float target
-and a hand-written chain does bright-pass → a four-level blur pyramid → one
-composite (chromatic aberration, bloom, ACES, split tone, vignette, grain). That
-grade is why it reads as film rather than as WebGL.
+**Scroll writes numbers, the frame reads them.** Lenis, ScrollTrigger and the
+WebGL frame all run inside `gsap.ticker` (one clock, `lagSmoothing(0)`). Scenes
+stay in place with CSS `position: sticky`; ScrollTrigger only scrubs values.
 
-**Without WebGL** the page is a plain stacked document that reads top to bottom.
-`meridian.css` authors both; `world.js` adds `.gl` to `<html>` and takes it back
-off if anything throws before the first frame lands. Never let the pinned layout
-apply without a renderer behind it — the result is a black screen with nothing on it.
+**One canvas, clipped.** A single fixed canvas sits behind the DOM. Each frame its
+`clip-path: inset(… round r)` follows a DOM rectangle, so the silk fills the hero,
+folds itself into a card (the AM monogram traces itself on it), and comes back
+inside the final call-to-action card.
 
-`?t=0.34` pins the move at one point on the line, for capturing stills.
-`window.MERIDIAN` exposes the scene, camera, composite material, rig and `WARP` —
-setting `WARP.dur` high and `WARP.t` by hand freezes the departure at a chosen
-point, which is the only way to look at a one-second flight properly.
+Scenes: hero → manifesto → six services on a horizontal track (≥ 992 px) while the
+page turns light → "We build / We run" → five steps → four commitments fanned →
+FAQ → final card. Below 992 px the track stacks vertically and each section carries
+its own background. `prefers-reduced-motion` gets the whole page with no Lenis and
+no scrubbing. Each service card links to `/start/?s=<service>`.
 
 ## Start a project
 
-`/start/` is a real page, not a modal: it survives a direct link, a refresh and a
-blocked module. Three things have to hold together for it to feel like one move.
+Hick's law: one question per screen, never more than six answers, and a tap is the
+answer. What (Build: website / app / SaaS / custom software — Run: website or
+social media management, or "not sure"), a few sentences about it, a budget range
+(skipped for the two Run services, which are monthly), then name and email. The
+brief fills a silk card beside the question as it goes; on a phone that card only
+appears once sent, as the recap. Keys 1–6 answer, ⌘/Ctrl+Enter leaves the text
+field, the browser's back button goes back one question. `?s=app` etc. answers the
+first question for the visitor.
 
-**The departure.** `a[data-warp]` on the home page hands the rig to `WARP` in
-`world.js`. The camera leaves the scroll curve, accelerates down the line it is
-already looking at, the lens widens and the grade is pushed until the frame blows
-out; the navigation happens inside that white, where there is nothing left to see.
-A `sessionStorage` flag tells the far side which entrance to play. Two safety nets:
-the loop can stop (hidden tab, lost context), so a 1.5 s timeout navigates
-regardless, and reduced-motion or a modified click skips the whole thing and
-follows the link.
-
-**The arrival.** `assets/start.js` opens on the same white and pulls out of it —
-exposure ramps down, the camera comes back off the mark. Its chamber is a separate,
-much smaller scene than the corridor, with a two-level blur instead of four: it is
-one held frame, not a move. Below 520 px there is no chamber at all; a phone gets a
-black page and no WebGL bill. The form is written first and imports three.js
-dynamically, so nothing in the backdrop can take the brief down with it.
-
-**The send.** `POST` to the `brief` Edge Function. Three paths, all landing
-somewhere: JS sends JSON and answers in place; without JS the form's own `action`
-POSTs natively and the function replies with a redirect back to `?sent=1`, which
-shows the same screen; and if the request never lands, the brief is handed back as
-a composed `mailto:` rather than lost.
+**The send.** `POST` to the `brief` Edge Function with the same field names as
+before (`title` is the service). Three paths, all landing somewhere: JS sends JSON
+and answers in place; without JS every question shows on one page and the form's
+own `action` POSTs natively, the function redirecting back to `?sent=1`; and if
+the request never lands, the brief is handed back as a composed `mailto:`.
 
 ## The backend
 

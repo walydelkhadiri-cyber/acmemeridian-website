@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Start a project — Acme Meridian</title>
-<meta name="description" content="Tell us what you want to build. A short brief goes straight to the person who will build it — one reply, usually within a day.">
+<meta name="description" content="Four short questions and your brief goes straight to the person who will build it — one reply, usually within a day.">
 <link rel="canonical" href="https://acmemeridian.com/start/">
-<meta name="theme-color" content="#050506">
+<meta name="theme-color" content="#151515">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Acme Meridian">
 <meta property="og:url" content="https://acmemeridian.com/start/">
 <meta property="og:title" content="Start a project — Acme Meridian">
-<meta property="og:description" content="Tell us what you want to build. A short brief goes straight to the person who will build it.">
+<meta property="og:description" content="Four short questions and your brief goes straight to the person who will build it — one reply, usually within a day.">
 <meta property="og:image" content="https://acmemeridian.com/assets/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Start a project — Acme Meridian">
-<meta name="twitter:description" content="Tell us what you want to build. A short brief goes straight to the person who will build it.">
+<meta name="twitter:description" content="Four short questions and your brief goes straight to the person who will build it — one reply, usually within a day.">
 <meta name="twitter:image" content="https://acmemeridian.com/assets/og-cover.png">
 
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -24,209 +24,525 @@
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
 
-<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter-var.woff2" crossorigin>
-<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/cormorant-var.woff2" crossorigin>
-<link rel="stylesheet" href="/meridian.css">
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/mona-sans-latin.woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts/night.css">
+<script>document.documentElement.classList.add('js');
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('rm');</script>
+<style>
+/* Hick's law, applied: the old brief asked twelve questions at once, with
+   twenty-six chips to weigh. This one asks one thing per screen, never more
+   than six answers to it, and a tap is the answer — no "next" to hunt for.
+   Build and Run are split into two short columns so the eye picks a lane
+   first and a service second. Timeline, stage, country and company are gone:
+   they are the first reply's job, not the visitor's.                      */
+:root{
+  --ink:#151515; --ink-2:#1d1e21;
+  --white:#f5f6f8; --mute:#9aa1ad; --line-d:rgba(255,255,255,.12);
+  --cobalt:#3f63ff; --cobalt-l:#7f98ff; --bad:#ff8a7a;
+  --sans:'Mona Sans',system-ui,-apple-system,sans-serif;
+  --gut:clamp(20px,4vw,56px); --ease:cubic-bezier(.22,1,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--ink);color:var(--white);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none} p{margin:0}
+h1,h2{margin:0;font-weight:800;letter-spacing:-.035em;line-height:.98}
+.caps{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase}
+button{font:inherit;color:inherit}
+
+.gl-wrap{position:fixed;inset:0;z-index:0;pointer-events:none}
+#silk{position:absolute;inset:0;width:100%;height:100%}
+
+/* nav ------------------------------------------------------------------ */
+.nav{position:fixed;inset:0 0 auto;z-index:50}
+.nav .in{display:flex;align-items:center;justify-content:space-between;height:84px;padding:0 var(--gut)}
+.brand{display:flex;align-items:center;gap:.8rem}
+.brand .sq{width:38px;height:38px;border-radius:9px;background:var(--ink);display:grid;place-items:center;box-shadow:0 0 0 1px var(--line-d)}
+.brand .sq svg{width:25px}
+.brand b{font-size:13px;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.leave{font-size:14px;font-weight:500;opacity:.72;transition:opacity .3s}
+.leave:hover{opacity:1}
+
+/* layout: the question on the left, the brief taking shape on the right */
+.page{position:relative;z-index:1;min-height:100svh;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(32px,5vw,88px);
+  padding:clamp(96px,13vh,112px) var(--gut) clamp(24px,5vh,56px);max-width:1440px;margin:0 auto}
+.q{display:flex;flex-direction:column;min-width:0}
+
+.meta{display:flex;align-items:center;gap:14px;height:40px;color:var(--mute)}
+.back{flex:none;width:40px;height:40px;padding:0;border-radius:50%;border:1px solid var(--line-d);background:none;display:grid;place-items:center;cursor:pointer;overflow:hidden;transition:border-color .3s,opacity .3s}
+.back:hover{border-color:#fff}
+.back[hidden]{display:grid;opacity:0;pointer-events:none;width:0;margin-right:-14px;border-width:0}
+.back svg{width:15px}
+.bar{flex:1;max-width:220px;height:2px;border-radius:2px;background:var(--line-d);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:var(--cobalt-l);transform-origin:left;transform:scaleX(.25);transition:transform .6s var(--ease)}
+
+form{flex:1;display:flex;flex-direction:column;margin-top:clamp(18px,4.5vh,56px)}
+.step{display:flex;flex-direction:column;flex:1}
+html.js .step:not(.on){display:none}
+.step h1{font-size:clamp(2.3rem,min(5vw,7.6vh),4.6rem);max-width:13ch;outline:none}
+.sub{margin-top:.9rem;color:var(--mute);max-width:52ch;font-size:16.5px}
+
+/* answers ---------------------------------------------------------------- */
+.lanes{margin-top:clamp(20px,4vh,44px);display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.lane > .caps{display:block;color:var(--mute);margin-bottom:12px}
+.lane.run > .caps{color:var(--cobalt-l)}
+.opts{display:grid;gap:8px}
+.budget .opts{margin-top:clamp(24px,4.5vh,44px);grid-template-columns:1fr 1fr;max-width:620px}
+.opt{position:relative;display:flex;align-items:center;gap:14px;height:clamp(50px,7.2vh,66px);padding:0 18px 0 14px;border-radius:14px;border:1px solid var(--line-d);
+  background:rgba(255,255,255,.025);cursor:pointer;transition:border-color .25s,background-color .25s,transform .35s var(--ease)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .k{flex:none;width:24px;height:24px;border-radius:6px;border:1px solid var(--line-d);display:grid;place-items:center;font-size:12px;font-weight:600;color:var(--mute);transition:all .25s}
+.opt .t{font-size:clamp(1.02rem,1.3vw,1.18rem);font-weight:600;letter-spacing:-.01em;line-height:1.2}
+.opt svg{flex:none;margin-left:auto;width:16px;opacity:0;transform:translateX(-6px);transition:opacity .25s,transform .35s var(--ease)}
+.opt:hover{border-color:rgba(127,152,255,.55);background:rgba(63,99,255,.08)}
+.opt:hover svg{opacity:1;transform:none}
+.opt:active{transform:scale(.985)}
+.opt:has(input:checked){border-color:var(--cobalt);background:rgba(63,99,255,.18)}
+.opt:has(input:checked) .k{background:var(--cobalt);border-color:var(--cobalt);color:#fff}
+.opt:has(input:checked) svg{opacity:1;transform:none}
+.opt:has(input:focus-visible){outline:2px solid var(--cobalt-l);outline-offset:3px}
+
+/* the quiet way out of a choice, so nobody is forced to pick a wrong one */
+.unsure{align-self:flex-start;margin-top:clamp(12px,2.2vh,18px);display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;color:var(--mute);font-size:15px;
+  border-bottom:1px solid transparent;transition:color .25s,border-color .25s}
+.unsure input{position:absolute;opacity:0;pointer-events:none}
+.unsure:hover,.unsure:has(input:checked){color:#fff;border-color:currentColor}
+.unsure:has(input:focus-visible){outline:2px solid var(--cobalt-l);outline-offset:4px;border-radius:4px}
+
+/* writing ---------------------------------------------------------------- */
+.area{margin-top:clamp(24px,4.5vh,44px);max-width:640px}
+textarea,.field input{width:100%;font:400 1.15rem/1.55 var(--sans);color:var(--white);background:rgba(255,255,255,.035);border:1px solid var(--line-d);border-radius:16px;
+  padding:18px 20px;outline:none;transition:border-color .25s,background-color .25s;-webkit-appearance:none;appearance:none}
+textarea{min-height:168px;resize:none;display:block}
+textarea::placeholder,.field input::placeholder{color:#6b7280}
+textarea:focus,.field input:focus{border-color:var(--cobalt-l);background:rgba(63,99,255,.06)}
+.bad textarea,.field.bad input{border-color:var(--bad)}
+.err{display:none;margin-top:.55rem;color:var(--bad);font-size:14.5px}
+.bad .err,.field.bad .err{display:block}
+.fields{margin-top:clamp(24px,4.5vh,44px);display:grid;gap:14px;max-width:520px}
+.field label{display:block;margin-bottom:.45rem;font-size:14px;font-weight:600;color:#c8ccd4}
+
+.go{margin-top:22px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.pill{display:inline-flex;align-items:center;gap:.6rem;height:52px;padding:0 1.4rem;border:0;border-radius:999px;background:var(--white);color:var(--ink);
+  font:700 13px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .3s,color .3s,transform .3s var(--ease)}
+.pill:hover{background:var(--cobalt);color:#fff}
+.pill:disabled{opacity:.6;cursor:default}
+.pill svg{width:14px;height:14px}
+.kbd{color:#6b7280;font-size:13px}
+.kbd b{font-weight:600;color:var(--mute);border:1px solid var(--line-d);border-radius:5px;padding:1px 6px;margin-right:2px}
+.note{margin-top:18px;color:#6b7280;font-size:13.5px;max-width:52ch}
+.note a{border-bottom:1px solid currentColor}
+.status{margin-top:18px;max-width:52ch;font-size:15px;color:var(--bad)}
+.status:empty{display:none}
+.status .pill{margin-top:14px}
+html:not(.js) .js-only{display:none}
+
+/* the brief, taking shape ----------------------------------------------- */
+.card{position:sticky;top:clamp(96px,13vh,112px);align-self:start;height:calc(100svh - clamp(96px,13vh,112px) - clamp(24px,5vh,56px));border-radius:30px;border:1px solid rgba(127,152,255,.35);overflow:hidden;min-height:0;
+  display:flex;flex-direction:column;justify-content:space-between;padding:clamp(28px,3vw,44px)}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(21,21,21,.6),rgba(21,21,21,.12) 42%,rgba(21,21,21,.82))}
+.card > *{position:relative}
+.card .top{display:flex;justify-content:space-between;color:#c8ccd4}
+.card .mono{width:clamp(70px,7vw,104px);margin:auto 0 0}
+.card .mono path{stroke:#fff;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.sum{margin:28px 0 0;padding:0;display:grid;gap:0;border-top:1px solid rgba(255,255,255,.16)}
+.sum div{display:grid;grid-template-columns:7.5rem 1fr;gap:1rem;padding:clamp(9px,1.6vh,14px) 0;border-bottom:1px solid rgba(255,255,255,.16);transition:opacity .5s}
+.sum dt{color:#aab0bb;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;padding-top:.2rem}
+.sum dd{margin:0;font-size:16px;font-weight:500;line-height:1.45;min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.sum div.empty{opacity:.42}
+.sum div.empty dd{color:#aab0bb;font-weight:400}
+.sum div[hidden]{display:none}
+.card .foot{margin-top:22px;font-size:clamp(1.05rem,1.3vw,1.25rem);font-weight:600;letter-spacing:-.01em}
+
+/* sent ------------------------------------------------------------------- */
+.sent{display:none}
+body.done .step,body.done .meta{display:none!important}
+body.done .sent{display:flex;flex-direction:column;flex:1}
+.sent h1{font-size:clamp(2.8rem,min(6vw,10vh),5.4rem)}
+.sent .sub{font-size:18px}
+.sent .go{margin-top:32px}
+
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* no JS: every question on one page, the old way, still sends ------------ */
+html:not(.js) .step{margin-bottom:64px}
+html:not(.js) .meta{display:none}
+
+/* small screens: the card becomes a band above the question -------------- */
+@media (max-width:900px){
+  /* on a phone the questions get the whole screen; the card comes back
+     once, as the recap, when the brief is sent */
+  .page{grid-template-columns:1fr;gap:36px;padding-top:96px}
+  .card{display:none}
+  body.done .card{display:flex;position:relative;top:auto;height:auto;border-radius:22px;padding:24px 22px}
+  body.done .card .mono{width:60px;margin:26px 0 0}
+  .sum div{grid-template-columns:6.2rem 1fr}
+  form{margin-top:22px}
+  .lanes{grid-template-columns:1fr;gap:22px}
+}
+@media (max-width:560px){
+  .nav .in{height:72px}
+  .leave span{display:none}
+  .page{padding-top:84px}
+  .budget .opts{grid-template-columns:1fr}
+  .kbd{display:none}
+  .opt{height:54px}
+}
+@media (hover:none){.kbd{display:none}}
+</style>
 </head>
 <body>
 
-<canvas id="gl" aria-hidden="true"></canvas>
-<div class="grain" aria-hidden="true"></div>
-<div class="flash" aria-hidden="true"></div>
+<div class="gl-wrap" aria-hidden="true"><canvas id="silk"></canvas></div>
 
-<header class="nav">
-  <a class="mark" href="/" aria-label="Acme Meridian — home">
-    <svg viewBox="0 0 140 100" aria-hidden="true" width="30" height="21">
-      <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 88V12l52 36 52-36v76" stroke-width="9"/>
-        <path d="M42 88l28-40 28 40" stroke-width="9"/>
-        <path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/>
-      </g>
-    </svg>
-    <span>Acme Meridian</span>
+<header class="nav"><div class="in">
+  <a class="brand" href="/" aria-label="Acme Meridian — home">
+    <span class="sq"><svg viewBox="0 0 140 100" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M18 88V12l52 36 52-36v76" stroke-width="9"/><path d="M42 88l28-40 28 40" stroke-width="9"/><path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/></svg></span>
+    <b>Acme Meridian</b>
   </a>
-  <p class="nav-note nav-back"><a href="/">&larr; Back</a></p>
-</header>
+  <a class="leave" href="/">&larr; <span>Back to the site</span></a>
+</div></header>
 
-<main class="start-wrap">
+<main class="page">
+  <div class="q">
+    <div class="meta js-only">
+      <button class="back" id="back" type="button" aria-label="Previous question" hidden><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 8H3M7 4L3 8l4 4"/></svg></button>
+      <span class="caps" id="count">1 / 4</span>
+      <span class="bar"><i id="barFill"></i></span>
+    </div>
+    <p class="sr" id="live" aria-live="polite" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)"></p>
 
-  <div class="start-head rise" style="--d:.05s">
-    <p class="eyebrow">Start a project</p>
-    <h1>Tell us what you&rsquo;re building.</h1>
-    <p class="lede">Five minutes here saves a week of back and forth. It goes straight to the
-      person who will build it &mdash; one reply, usually within a day.</p>
+    <!-- A real action, so the brief still sends with scripts blocked; with JS
+         the submit is intercepted and answered in place. Same endpoint and
+         field names as the live /start/ — the function needs no change. -->
+    <form id="brief" novalidate method="POST" action="https://slkyivycuxbjigwqpyzd.supabase.co/functions/v1/brief">
+      <div class="hp" aria-hidden="true"><label for="_honey">Leave this empty</label><input type="text" id="_honey" name="_honey" tabindex="-1" autocomplete="off"></div>
+      <input type="hidden" name="title" id="title" value="Project brief">
+
+      <section class="step" data-step="service" role="group" aria-labelledby="h-service">
+        <h1 id="h-service" tabindex="-1">What can we help with?</h1>
+        <p class="sub">Pick the closest one — you can mention the rest next.</p>
+        <div class="lanes">
+          <div class="lane"><span class="caps">Build</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="build" value="Website" data-slug="website"><span class="k">1</span><span class="t">A website</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+              <label class="opt"><input type="radio" name="build" value="Mobile app (iOS / Android)" data-slug="app"><span class="k">2</span><span class="t">A mobile app</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+              <label class="opt"><input type="radio" name="build" value="SaaS product" data-slug="saas"><span class="k">3</span><span class="t">A SaaS product</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+              <label class="opt"><input type="radio" name="build" value="Custom internal software" data-slug="software"><span class="k">4</span><span class="t">Custom software</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+            </div>
+          </div>
+          <div class="lane run"><span class="caps">Run</span>
+            <div class="opts">
+              <label class="opt"><input type="radio" name="build" value="Website management" data-slug="management" data-run><span class="k">5</span><span class="t">Manage my website</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+              <label class="opt"><input type="radio" name="build" value="Social media management" data-slug="social" data-run><span class="k">6</span><span class="t">Manage my social media</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+            </div>
+          </div>
+        </div>
+        <label class="unsure"><input type="radio" name="build" value="Not sure yet" data-slug="unsure">Not sure yet — I’ll explain &rarr;</label>
+        <p class="err js-only" style="margin-top:14px">Pick one to continue — “not sure yet” counts.</p>
+      </section>
+
+      <section class="step" data-step="detail" role="group" aria-labelledby="h-detail">
+        <h1 id="h-detail" tabindex="-1">Tell us about it.</h1>
+        <p class="sub">What it is, who it’s for, what would make it a success. Two or three sentences is plenty.</p>
+        <div class="area">
+          <label class="sr" for="detail" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">About the project</label>
+          <textarea id="detail" name="detail" rows="5" maxlength="8000" placeholder="We run a logistics company in Lyon. Drivers still fill in paper sheets and someone re-types them every evening…"></textarea>
+          <p class="err">A couple of sentences is enough, but we need something to go on.</p>
+        </div>
+        <div class="go js-only">
+          <button class="pill" type="submit">Continue <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+          <span class="kbd"><b id="mod">⌘</b><b>Enter</b></span>
+        </div>
+      </section>
+
+      <section class="step budget" data-step="budget" role="group" aria-labelledby="h-budget">
+        <h1 id="h-budget" tabindex="-1">A budget in mind?</h1>
+        <p class="sub">A range, not a commitment. It tells us which version of this is worth proposing — and we’ll say plainly if it doesn’t reach.</p>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="budget" value="Under $5,000"><span class="k">1</span><span class="t">Under $5k</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+          <label class="opt"><input type="radio" name="budget" value="$5,000 – $15,000"><span class="k">2</span><span class="t">$5k – $15k</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+          <label class="opt"><input type="radio" name="budget" value="$15,000 – $50,000"><span class="k">3</span><span class="t">$15k – $50k</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+          <label class="opt"><input type="radio" name="budget" value="Over $50,000"><span class="k">4</span><span class="t">$50k +</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></label>
+        </div>
+        <label class="unsure"><input type="radio" name="budget" value="Not sure yet">Not sure yet &rarr;</label>
+      </section>
+
+      <section class="step" data-step="contact" role="group" aria-labelledby="h-contact">
+        <h1 id="h-contact" tabindex="-1">Where should we reply?</h1>
+        <p class="sub">It goes straight to the person who would build it — one reply, usually within a day.</p>
+        <div class="fields">
+          <div class="field"><label for="name">Your name</label><input type="text" id="name" name="name" autocomplete="name" maxlength="120" placeholder="Jane Smith"><p class="err">We need a name to reply to.</p></div>
+          <div class="field"><label for="email">Email</label><input type="email" id="email" name="email" autocomplete="email" maxlength="200" inputmode="email" placeholder="you@company.com"><p class="err">That address doesn’t look right.</p></div>
+        </div>
+        <div class="go">
+          <button class="pill" type="submit" id="send"><span>Send the brief</span> <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button>
+        </div>
+        <p class="note">We use this to reply to you and nothing else. No list, no third party. <a href="/privacy/">Privacy</a>.</p>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+      </section>
+
+      <section class="sent" id="sent" aria-labelledby="h-sent">
+        <h1 id="h-sent" tabindex="-1">It’s in.</h1>
+        <p class="sub" id="sentLine">Your brief went straight to Walyd. You’ll get a real reply from the person who would build this, usually within a day.</p>
+        <div class="go"><a class="pill" href="/">Back to the site <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
+      </section>
+    </form>
   </div>
 
-  <!-- A real action, so the page still works with the module blocked: the
-       browser POSTs natively and the function answers with a redirect back to
-       ?sent=1. With JS the submit is intercepted and answered in place.
-       The host is filled in from assets/config.js at build time — keep the two
-       in step if the Supabase project ever moves. -->
-  <form id="brief" novalidate method="POST"
-        action="https://slkyivycuxbjigwqpyzd.supabase.co/functions/v1/brief">
-
-    <!-- honeypot: a human never sees this, a scraper fills it -->
-    <div class="hp" aria-hidden="true">
-      <label for="_honey">Leave this empty</label>
-      <input type="text" id="_honey" name="_honey" tabindex="-1" autocomplete="off">
-    </div>
-
-    <fieldset class="fs rise" style="--d:.14s">
-      <legend><b>01</b> Who you are</legend>
-      <div class="grid">
-        <div class="field">
-          <label for="name">Your name <span class="req">*</span></label>
-          <input type="text" id="name" name="name" autocomplete="name" required
-                 placeholder="The person running this project">
-          <p class="err">We need a name to reply to.</p>
-        </div>
-        <div class="field">
-          <label for="email">Email <span class="req">*</span></label>
-          <input type="email" id="email" name="email" autocomplete="email" required
-                 placeholder="you@company.com">
-          <p class="err">That address doesn&rsquo;t look right.</p>
-        </div>
-        <div class="field">
-          <label for="company">Company or organisation</label>
-          <input type="text" id="company" name="company" autocomplete="organization"
-                 placeholder="Optional">
-        </div>
-        <div class="field">
-          <label for="country">Where you are</label>
-          <input type="text" id="country" name="country" autocomplete="country-name"
-                 placeholder="City, country — optional">
-        </div>
-        <div class="field wide" role="group" aria-labelledby="forwho-l">
-          <label id="forwho-l">This project is for <span class="req">*</span></label>
-          <div class="choices" data-name="For">
-            <label class="choice"><input type="radio" name="forwho" value="My company" required><span>My company</span></label>
-            <label class="choice"><input type="radio" name="forwho" value="Myself — personal project"><span>Myself, personally</span></label>
-            <label class="choice"><input type="radio" name="forwho" value="A client of mine"><span>A client of mine</span></label>
-            <label class="choice"><input type="radio" name="forwho" value="A startup being founded"><span>A startup we&rsquo;re founding</span></label>
-          </div>
-          <p class="err">Pick the one that fits best.</p>
-        </div>
-      </div>
-    </fieldset>
-
-    <fieldset class="fs rise" style="--d:.22s">
-      <legend><b>02</b> The project</legend>
-      <div class="grid">
-        <div class="field wide">
-          <label for="title">Project title <span class="req">*</span></label>
-          <input type="text" id="title" name="title" required
-                 placeholder="A working name is fine">
-          <p class="err">Give it a name, even a rough one.</p>
-        </div>
-        <div class="field wide" role="group" aria-labelledby="build-l">
-          <label id="build-l">What do you want built <span class="req">*</span></label>
-          <p class="hint">Pick everything that applies &mdash; most projects are more than one.</p>
-          <div class="choices" data-name="Wants">
-            <label class="choice"><input type="checkbox" name="build" value="Website"><span>A website</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="Web platform / portal"><span>A web platform</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="SaaS product"><span>A SaaS product</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="Mobile app (iOS / Android)"><span>A mobile app</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="E-commerce"><span>E-commerce</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="Custom internal software"><span>Internal software</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="AI / automation"><span>AI &amp; automation</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="Digitalizing an existing process"><span>Digitalizing a process</span></label>
-            <label class="choice"><input type="checkbox" name="build" value="Not sure yet"><span>Not sure yet</span></label>
-          </div>
-          <p class="err">Choose at least one &mdash; &ldquo;not sure yet&rdquo; counts.</p>
-        </div>
-        <div class="field wide" role="group" aria-labelledby="stage-l">
-          <label id="stage-l">Where it stands today</label>
-          <div class="choices" data-name="Stage">
-            <label class="choice"><input type="radio" name="stage" value="An idea, nothing written"><span>An idea</span></label>
-            <label class="choice"><input type="radio" name="stage" value="Specs or designs exist"><span>Specs or designs exist</span></label>
-            <label class="choice"><input type="radio" name="stage" value="Something is live, needs extending"><span>Something is live</span></label>
-            <label class="choice"><input type="radio" name="stage" value="A rebuild of an existing product"><span>A rebuild</span></label>
-          </div>
-        </div>
-        <div class="field wide">
-          <label for="brief-text">Tell us about it <span class="req">*</span></label>
-          <p class="hint">What it does, who uses it, and what has to be true for it to count as a
-            success. Write it the way you&rsquo;d explain it to a colleague &mdash; no format needed.</p>
-          <textarea id="brief-text" name="detail" required rows="7"
-            placeholder="We run a logistics company in Lyon. Drivers still fill in paper sheets and someone re-types them every evening…"></textarea>
-          <p class="err">A couple of sentences is enough, but we need something.</p>
-        </div>
-      </div>
-    </fieldset>
-
-    <fieldset class="fs rise" style="--d:.3s">
-      <legend><b>03</b> Shape and timing</legend>
-      <div class="grid">
-        <div class="field wide" role="group" aria-labelledby="when-l">
-          <label id="when-l">When you want to start</label>
-          <div class="choices" data-name="Timeline">
-            <label class="choice"><input type="radio" name="timeline" value="As soon as possible"><span>As soon as possible</span></label>
-            <label class="choice"><input type="radio" name="timeline" value="Within 1–3 months"><span>1&ndash;3 months</span></label>
-            <label class="choice"><input type="radio" name="timeline" value="Within 3–6 months"><span>3&ndash;6 months</span></label>
-            <label class="choice"><input type="radio" name="timeline" value="No fixed date"><span>No fixed date</span></label>
-          </div>
-        </div>
-        <div class="field wide" role="group" aria-labelledby="budget-l">
-          <label id="budget-l">Budget you have in mind</label>
-          <p class="hint">A range, not a commitment. It tells us what version of this is worth
-            proposing &mdash; and we&rsquo;ll say plainly if it doesn&rsquo;t reach.</p>
-          <div class="choices" data-name="Budget">
-            <label class="choice"><input type="radio" name="budget" value="Under $5,000"><span>Under $5k</span></label>
-            <label class="choice"><input type="radio" name="budget" value="$5,000 – $15,000"><span>$5k &ndash; $15k</span></label>
-            <label class="choice"><input type="radio" name="budget" value="$15,000 – $50,000"><span>$15k &ndash; $50k</span></label>
-            <label class="choice"><input type="radio" name="budget" value="Over $50,000"><span>$50k +</span></label>
-            <label class="choice"><input type="radio" name="budget" value="Not sure yet"><span>Not sure yet</span></label>
-          </div>
-        </div>
-        <div class="field wide">
-          <label for="links">Links or anything else</label>
-          <input type="text" id="links" name="links"
-                 placeholder="Current site, competitors, a deck — optional">
-        </div>
-      </div>
-    </fieldset>
-
-    <div class="start-foot rise" style="--d:.38s">
-      <button class="btn solid" type="submit" id="send"><span>Send the brief</span>
-        <svg class="ar" width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
-          <path d="M2 11L11 2M11 2H4M11 2v7" stroke="currentColor" stroke-width="1.2"
-                stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <p class="start-note">We use this to reply to you and nothing else. No list, no CRM, no
-        third party. <a href="/privacy/">Privacy</a>.</p>
-    </div>
-
-    <div class="status" id="status" role="status" aria-live="polite"></div>
-  </form>
-
-  <p class="status" id="nojs-err" hidden></p>
-
-  <div class="sent" id="sent">
-    <p class="eyebrow" style="justify-content:center">Received</p>
-    <h2>Thank you &mdash; it&rsquo;s in.</h2>
-    <p>Your brief went straight to Walyd. You&rsquo;ll get a real reply from the person who would
-      build this, usually within a day.</p>
-    <p style="margin-top:2rem"><a class="btn" href="/"><span>Back to the site</span></a></p>
-  </div>
-
+  <aside class="card js-only" id="card" aria-hidden="true">
+    <div class="top caps"><span>Your brief</span><span id="cStep">01 / 04</span></div>
+    <svg class="mono" viewBox="0 0 140 100"><path d="M18 88V12l52 36 52-36v76" stroke-width="7"/><path d="M42 88l28-40 28 40" stroke-width="7"/><path d="M53 73h34" stroke-width="5.5" stroke-linejoin="miter"/></svg>
+    <dl class="sum">
+      <div data-k="service" class="empty"><dt>Service</dt><dd>Not chosen yet</dd></div>
+      <div data-k="detail" class="empty"><dt>About</dt><dd>In your words</dd></div>
+      <div data-k="budget" class="empty"><dt>Budget</dt><dd>A rough range</dd></div>
+      <div data-k="contact" class="empty"><dt>Reply to</dt><dd>You</dd></div>
+    </dl>
+    <p class="foot">One reply, usually within a day.</p>
+  </aside>
 </main>
 
-<footer class="foot">
-  <nav class="foot-links" aria-label="Footer">
-    <a href="/#capabilities">Capabilities</a>
-    <a href="/#process">How we work</a>
-    <a href="/#contact">Contact</a>
-    <a href="/privacy/">Privacy</a>
-    <a href="/terms/">Terms</a>
-    <a href="/legal/">Legal</a>
-  </nav>
-  <p class="foot-legal">
-    ACME MERIDIAN LLC &middot; A limited liability company registered in Wyoming, USA.<br>
-    <a href="mailto:walyd@acmemeridian.com">walyd@acmemeridian.com</a>
-    &middot; &copy; <span id="yr">2026</span> Acme Meridian LLC. All rights reserved.
-  </p>
-</footer>
+<script src="/assets/vendor/gsap.min.js"></script>
+<script type="module">
+const RM = document.documentElement.classList.contains('rm');
+const $ = (s) => document.querySelector(s);
+const form = $('#brief');
+const ENDPOINT = form.action;
+const MAILBOX = 'walyd@acmemeridian.com';
+/* the server's own pattern, so the browser never accepts what the function refuses */
+const EMAIL_RE = /^[A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64}@[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])?)+$/;
 
-<script type="module" src="/assets/start.js"></script>
-<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+const steps = [...form.querySelectorAll('.step')];
+const byName = Object.fromEntries(steps.map((s) => [s.dataset.step, s]));
+const picked = (n) => form.querySelector(`input[name="${n}"]:checked`);
+const val = (id) => $('#' + id).value.trim();
+
+/* Running a site or a social feed is a monthly service, not a project with
+   a one-off budget — those visitors skip the budget question entirely. */
+const route = () => (picked('build')?.dataset.run !== undefined ? ['service', 'detail', 'contact'] : ['service', 'detail', 'budget', 'contact']);
+let cur = 'service', pushed = 0;
+/* each answer gives the silk a breath; the frame loop below spends it */
+let boost = 0;
+function pulse(k = 1) { boost = Math.max(boost, k); }
+
+const PLACEHOLDER = {
+  website: 'We’re a dental clinic in Miami. Our site is ten years old, looks bad on phones and nobody can book online…',
+  app: 'A booking app for our three gyms: members reserve classes, get reminders, and pay their subscription in the app…',
+  saas: 'A tool for property managers to track maintenance requests — tenants report, managers assign, contractors close…',
+  software: 'We run a logistics company in Lyon. Drivers still fill in paper sheets and someone re-types them every evening…',
+  management: 'Our site runs on WordPress. Nobody has updated it in a year, the contact form broke last month…',
+  social: 'We’re a restaurant group with two locations. We post on Instagram when someone has time — which is rarely…',
+  unsure: 'Where you are today, what’s getting in the way, and what you’d like to be different in six months…',
+};
+
+/* ------------------------------------------------------------ the card */
+const sumRow = (k) => $(`.sum [data-k="${k}"]`);
+function fill(k, text) {
+  const row = sumRow(k); if (!row) return;
+  const dd = row.querySelector('dd');
+  if (!row.dataset.empty) row.dataset.empty = dd.textContent;
+  row.classList.toggle('empty', !text);
+  dd.textContent = text || row.dataset.empty;
+}
+function syncCard() {
+  const s = picked('build'), b = picked('budget');
+  const label = (i) => i ? (i.closest('label').querySelector('.t')?.textContent || 'Not sure yet') : '';
+  fill('service', label(s));
+  const d = val('detail');
+  fill('detail', d.length >= 20 ? d : '');
+  fill('budget', label(b));
+  sumRow('budget').hidden = !route().includes('budget');
+  const n = val('name'), e = val('email');
+  fill('contact', n && EMAIL_RE.test(e) ? `${n} · ${e}` : '');
+}
+
+/* ------------------------------------------------------------ the steps */
+function show(name, { focus = true } = {}) {
+  const r = route(); if (!r.includes(name)) name = r[r.length - 1];
+  const from = byName[cur], to = byName[name], dir = r.indexOf(name) >= r.indexOf(cur) ? 1 : -1;
+  cur = name;
+  const i = r.indexOf(name);
+  $('#count').textContent = `${i + 1} / ${r.length}`;
+  $('#cStep').textContent = `0${i + 1} / 0${r.length}`;
+  $('#barFill').style.transform = `scaleX(${(i + 1) / r.length})`;
+  $('#back').hidden = i === 0;
+  $('#live').textContent = `Question ${i + 1} of ${r.length}`;
+  if (name === 'detail') {
+    const slug = picked('build')?.dataset.slug;
+    if (slug && PLACEHOLDER[slug]) $('#detail').placeholder = PLACEHOLDER[slug];
+  }
+  syncCard();
+  pulse();
+
+  const enter = () => {
+    steps.forEach((s) => s.classList.toggle('on', s === to));
+    const target = { detail: '#detail', contact: '#name' }[name];
+    if (focus) {
+      /* on a phone, focusing a field on arrival would throw the keyboard over
+         the question before it has been read — the heading takes focus there */
+      const el = target && matchMedia('(hover:hover)').matches ? $(target) : to.querySelector('h1');
+      el.focus({ preventScroll: true });
+    }
+    if (!RM && window.gsap) {
+      gsap.fromTo(to.children, { y: 26 * dir, opacity: 0 }, { y: 0, opacity: 1, duration: .6, ease: 'power3.out', stagger: .05, clearProps: 'transform,opacity' });
+    }
+    if (innerWidth <= 900) scrollTo({ top: 0, behavior: RM ? 'auto' : 'smooth' });
+  };
+  if (from && from !== to && !RM && window.gsap) {
+    gsap.to(from.children, { y: -18 * dir, opacity: 0, duration: .22, ease: 'power2.in', stagger: .02, onComplete: () => { gsap.set(from.children, { clearProps: 'transform,opacity' }); enter(); } });
+  } else enter();
+}
+
+function next() {
+  const r = route(), i = r.indexOf(cur);
+  if (i < r.length - 1) { history.pushState({ s: r[i + 1] }, ''); pushed++; show(r[i + 1]); }
+}
+function back() {
+  if (pushed > 0) { history.back(); return; }
+  const r = route(), i = r.indexOf(cur);
+  if (i > 0) { history.replaceState({ s: r[i - 1] }, ''); show(r[i - 1]); }
+}
+addEventListener('popstate', (e) => { pushed = Math.max(0, pushed - 1); show(e.state?.s || 'service'); });
+$('#back').addEventListener('click', back);
+
+/* A tap is the answer. Arrow keys only move the selection — Enter or Space
+   confirms — so a keyboard user can look before they leap.              */
+let arrowAt = 0;
+addEventListener('keydown', (e) => { if (e.key.startsWith('Arrow')) arrowAt = performance.now(); }, true);
+form.addEventListener('change', (e) => {
+  const t = e.target; syncCard();
+  if (t.type !== 'radio') return;
+  t.closest('.step').classList.remove('bad');
+  if (performance.now() - arrowAt < 120) return;
+  /* a second tap during the beat must not answer the next question too */
+  const at = cur;
+  setTimeout(() => { if (cur === at) next(); }, RM ? 0 : 240);
+});
+
+/* number keys answer the choice questions, ⌘/Ctrl+Enter leaves the textarea */
+addEventListener('keydown', (e) => {
+  if (document.body.classList.contains('done')) return;
+  if (e.target.matches('input[type=text],input[type=email],textarea')) {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && cur === 'detail') { e.preventDefault(); form.requestSubmit(); }
+    return;
+  }
+  const n = parseInt(e.key, 10);
+  if (!n || e.metaKey || e.ctrlKey || e.altKey) return;
+  const opts = byName[cur].querySelectorAll('.opt input');
+  if (opts[n - 1]) { opts[n - 1].checked = true; opts[n - 1].dispatchEvent(new Event('change', { bubbles: true })); }
+});
+if (!/Mac|iP/.test(navigator.platform)) $('#mod').textContent = 'Ctrl';
+
+form.addEventListener('input', (e) => {
+  e.target.closest('.field')?.classList.remove('bad');
+  if (e.target.id === 'detail') { byName.detail.classList.remove('bad'); grow(e.target); }
+  syncCard();
+});
+function grow(ta) { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight + 2, innerHeight * .42) + 'px'; }
+
+function check(name) {
+  if (name === 'service') { const ok = !!picked('build'); byName.service.classList.toggle('bad', !ok); return ok; }
+  if (name === 'detail') { const ok = val('detail').length >= 20; byName.detail.classList.toggle('bad', !ok); if (!ok) $('#detail').focus(); return ok; }
+  if (name === 'contact') {
+    const nOk = val('name').length >= 2, eOk = EMAIL_RE.test(val('email'));
+    $('#name').closest('.field').classList.toggle('bad', !nOk);
+    $('#email').closest('.field').classList.toggle('bad', !eOk);
+    if (!nOk) $('#name').focus(); else if (!eOk) $('#email').focus();
+    return nOk && eOk;
+  }
+  return true;
+}
+
+/* ------------------------------------------------------------- sending */
+function payload() {
+  const s = picked('build'), b = picked('budget');
+  const service = s ? s.value : 'Not sure yet';
+  return {
+    name: val('name'), email: val('email'),
+    title: service === 'Not sure yet' ? 'New project' : service,
+    wants: [service], detail: val('detail'),
+    budget: route().includes('budget') && b ? b.value : '',
+    _honey: $('#_honey').value,
+  };
+}
+function mailto() {
+  const p = payload();
+  const body = `Name: ${p.name}\nEmail: ${p.email}\nWants: ${p.wants.join(', ')}\nBudget: ${p.budget || '—'}\n\n${p.detail}`;
+  return `mailto:${MAILBOX}?subject=${encodeURIComponent(`Project brief — ${p.title} — ${p.name}`)}&body=${encodeURIComponent(body)}`;
+}
+const statusEl = $('#status'), sendBtn = $('#send');
+let sending = false;
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if (!check(cur)) return;
+  if (cur !== 'contact') { next(); return; }
+  /* every earlier answer is checked again — a deep link or the back button
+     can leave one empty */
+  for (const n of route().slice(0, -1)) if (!check(n)) { show(n); return; }
+  if (sending || $('#_honey').value) return;
+
+  sending = true; sendBtn.disabled = true;
+  sendBtn.querySelector('span').textContent = 'Sending…';
+  statusEl.textContent = '';
+  fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload()) })
+    .then((r) => r.json().catch(() => ({})).then((j) => ({ ok: r.ok, status: r.status, j })))
+    .then(({ ok, status, j }) => {
+      if (!ok) throw Object.assign(new Error(j.error || 'refused'), { status });
+      done();
+    })
+    .catch((err) => {
+      sending = false; sendBtn.disabled = false;
+      sendBtn.querySelector('span').textContent = 'Send the brief';
+      if (err.status === 429) { statusEl.textContent = 'You’ve just sent us a brief — give it a moment before the next one.'; return; }
+      if (err.status === 422) { statusEl.textContent = 'Something in there was rejected. Check your answers and try again.'; return; }
+      statusEl.innerHTML = '<p>That didn’t go through — the connection or a blocker got in the way. Nothing you wrote is lost: this opens it in your own mail app, ready to send.</p>';
+      const a = document.createElement('a'); a.className = 'pill'; a.href = mailto(); a.textContent = 'Send it by email instead';
+      statusEl.appendChild(a);
+    });
+});
+
+function done() {
+  const first = val('name').split(/\s+/)[0];
+  $('#sentLine').textContent = `Thank you${first ? ', ' + first : ''}. Your brief went straight to Walyd — you’ll get a real reply at ${val('email') || 'your address'}, usually within a day.`;
+  document.body.classList.add('done');
+  history.replaceState(null, '');
+  $('#count').textContent = ''; $('#cStep').textContent = 'Sent';
+  ['service', 'detail', 'budget', 'contact'].forEach((k) => sumRow(k).classList.remove('empty'));
+  pulse(2.2);
+  $('#h-sent').focus({ preventScroll: true });
+  if (!RM && window.gsap) gsap.from($('#sent').children, { y: 26, opacity: 0, duration: .7, ease: 'power3.out', stagger: .07, clearProps: 'transform,opacity' });
+}
+
+/* ----------------------------------------------------------- arrival
+   ?s=app (from a service card on the home page) answers the first
+   question for the visitor; ?sent=1 is where the no-JS path lands.      */
+const q = new URLSearchParams(location.search);
+if (q.get('sent') === '1') { document.body.classList.add('done'); }
+const pre = q.get('s') && form.querySelector(`input[data-slug="${CSS.escape(q.get('s'))}"]`);
+if (pre) { pre.checked = true; history.replaceState({ s: 'detail' }, ''); cur = 'detail'; show('detail', { focus: false }); }
+else { history.replaceState({ s: 'service' }, ''); show('service', { focus: false }); }
+
+/* ---------------------------------------------------------------- silk
+   Decoration only, imported last and wrapped: if WebGL is missing the card
+   is a plain bordered panel and the form does not notice.               */
+import('/assets/silk.js').then(({ createSilk }) => {
+  const canvas = $('#silk'), card = $('#card');
+  const draw = createSilk(canvas, { rm: RM });
+  if (!draw) { canvas.remove(); return; }
+  let last = performance.now();
+  const frame = () => {
+    const now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
+    boost *= Math.exp(-dt * 2.4);
+    const r = card.getBoundingClientRect(), W = innerWidth, H = innerHeight, small = W <= 900;
+    canvas.style.clipPath = `inset(${Math.max(0, r.top)}px ${Math.max(0, W - r.right)}px ${Math.max(0, H - r.bottom)}px ${Math.max(0, r.left)}px round ${small ? 22 : 30}px)`;
+    canvas.style.visibility = r.bottom > 0 && r.top < H ? 'visible' : 'hidden';
+    if (canvas.style.visibility === 'visible') draw(dt, r, { mono: .45, dx: small ? 0 : .3, dy: 0, scale: small ? .9 : 1.25, speed: 1 + boost * 5 });
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}).catch(() => $('#silk').remove());
+</script>
 </body>
 </html>
