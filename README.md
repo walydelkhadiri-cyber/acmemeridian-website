@@ -16,7 +16,7 @@ assets/fonts/       Mona Sans, self-hosted (night.css), plus the legal pages' fo
 admin/ + admin.js   the private brief inbox (Supabase auth)
 styles.css          design system for the legal pages
 app.js              reveals, menu, copy-to-clipboard — legal pages only
-meridian.css        the admin page's styles (and the previous home page's)
+assets/admin.css    the admin page's styles
 privacy/ terms/ legal/   legal pages (clean URLs via folders)
 downloads/          the business card PDFs and the vCard
 tools/              generators — only needed when regenerating assets

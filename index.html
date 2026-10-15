@@ -345,8 +345,13 @@ h1,h2,h3{margin:0;font-weight:800;letter-spacing:-.035em;line-height:.95}
 .step p{margin-top:.6rem;color:var(--mute);font-size:15px}
 
 /* 6 · commitments fan --------------------------------------------------- */
-.vows{position:relative;z-index:1;padding:clamp(60px,10vh,120px) 0 clamp(120px,18vh,200px)}
+.vows{position:relative;z-index:1;overflow-x:clip;padding:clamp(60px,10vh,120px) 0 clamp(120px,18vh,200px)}
 .fan{position:relative;height:min(60vh,500px);margin-top:20px}
+@media (min-width:992px){
+  html.js:not(.rm) .vows{height:240vh;padding:0}
+  html.js:not(.rm) .vows-stick{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:70px}
+  html.js:not(.rm) .vows-stick > .wrap{width:100%}
+}
 .vow{position:absolute;left:50%;top:6%;width:clamp(220px,19.5vw,300px);height:min(48vh,390px);margin-left:calc(clamp(220px,19.5vw,300px)/-2);border-radius:22px;padding:28px;
   background:var(--ink-2);border:1px solid var(--line-d);display:flex;flex-direction:column;transition:box-shadow .4s}
 .vow:nth-child(2){background:var(--white);color:var(--ink)}
@@ -399,6 +404,7 @@ html:not(.js) .h-track,.rm .h-track{flex-wrap:wrap;padding:0 var(--gut)}
 html:not(.js) .mirror,.rm .mirror{height:auto} html:not(.js) .mirror-stick,.rm .mirror-stick{position:static;height:auto;padding:100px 0}
 html:not(.js) .fan,.rm .fan{height:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;padding:0 var(--gut)}
 html:not(.js) .vow,.rm .vow{position:static;margin:0;width:auto}
+html:not(.js) .vows-stick,.rm .vows-stick{position:static;height:auto}
 .rm .up{opacity:1;transform:none}
 
 /* phones and tablets: one staging, vertical -------------------------------- */
@@ -466,7 +472,7 @@ h1,h2,h3{text-wrap:balance} p{text-wrap:pretty}
     <div class="veil" id="veil"></div>
     <div class="hero-target" id="heroTarget"></div>
     <div class="wrap hero-copy" id="heroCopy">
-      <span class="chip"><b>LLC</b> Software studio · Wyoming, USA</span>
+      <span class="chip"><b>LLC</b> Software company · Wyoming, USA</span>
       <h1>We build the software your business runs on.</h1>
       <p class="lede">Websites, mobile apps, SaaS products and custom software — designed, built and shipped by one team. Then we keep your site and your social channels running.</p>
       <div class="acts">
@@ -559,6 +565,7 @@ h1,h2,h3{text-wrap:balance} p{text-wrap:pretty}
 
 <!-- 6 · commitments: four cards that fan open -->
 <section class="vows" id="why">
+  <div class="vows-stick">
   <div class="wrap">
     <div class="sec-head"><h2 class="up">Put in writing.</h2><p class="up">Commitments, not adjectives on a homepage.</p></div>
   </div>
@@ -568,6 +575,7 @@ h1,h2,h3{text-wrap:balance} p{text-wrap:pretty}
     <div class="vow"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="12" width="18" height="12" rx="2.5"/><path d="M9 12V9a5 5 0 0 1 10 0v3"/></svg><h3>A clean handover</h3><p>Documentation and access you can act on without us. Staying is a choice, not a lock-in.</p></div>
     <div class="vow"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="14" cy="14" r="10"/><path d="M4 14h20M14 4c3 3 4 6.5 4 10s-1 7-4 10M14 4c-3 3-4 6.5-4 10s1 7 4 10"/></svg><h3>A registered company</h3><p>Acme Meridian LLC, Wyoming, USA — working with businesses worldwide.</p></div>
   </div>
+</div>
 </section>
 
 <!-- 7 · faq -->
@@ -840,26 +848,37 @@ if (!RM) {
     document.querySelectorAll('#steps .step').forEach((s, i) => i && gsap.fromTo(s, { y: `${i * 5}rem` }, { y: 0, ease: 'none',
       scrollTrigger: { trigger: '#steps', start: 'top bottom', end: 'bottom 40%', scrub: true } }));
 
-    /* 6 · commitments: arrive from below, then open like a hand of cards */
+    /* 6 · commitments: while the section is held, the four cards are dealt
+       one after another into a single stack, then open like a hand of cards.
+       Everything rides the scroll (scrub 1 smooths it), so it is as slow or
+       as fast as the visitor, and runs backwards when they scroll back. */
     const cards = gsap.utils.toArray('#fan .vow');
     /* Lando fans photos, where overlap is free. These carry text, so each
        card steps by its own width and only the tilted corners touch. */
     const cw = cards[0].offsetWidth / 16, gap = 1.04;
     const P = [[.94, -7, -1.5 * cw * gap, 2], [1, -2, -.5 * cw * gap, 0], [1, 2, .5 * cw * gap, 0], [.94, 7, 1.5 * cw * gap, 2]];
-    gsap.set(cards, { y: '10rem', opacity: 0 });
-    gsap.timeline({ scrollTrigger: { trigger: '#fan', start: 'top 85%', once: true } })
-      .to(cards, { y: 0, opacity: 1, duration: .8, ease: 'power2.out', stagger: { amount: .4, from: 'end' } })
-      .to(cards, { scale: (i) => P[i][0], rotation: (i) => P[i][1], x: (i) => P[i][2] + 'rem', y: (i) => P[i][3] + 'rem',
-        duration: 1.2, ease: 'elastic.out(1, 0.75)', stagger: { amount: .2, from: 'center' } }, '-=.4');
-    cards.forEach((c, i) => {
-      c.addEventListener('mouseenter', () => gsap.to(c, { y: P[i][3] - 2.5 + 'rem', scale: P[i][0] * 1.06, duration: .5, ease: 'power3.out', zIndex: 5 }));
-      c.addEventListener('mouseleave', () => gsap.to(c, { y: P[i][3] + 'rem', scale: P[i][0], duration: .6, ease: 'elastic.out(1,.75)', zIndex: 1 }));
+    const DECK = [-5, 3, -2, 4];
+    const inner = cards.map((c) => [...c.children]);
+    gsap.set(cards, { x: 0, y: '16rem', rotation: (i) => DECK[i] * 2, scale: .88, opacity: 0 });
+    gsap.set(inner.flat(), { opacity: 0, y: 14 });
+    const deal = gsap.timeline({ scrollTrigger: { trigger: '#why', start: 'top 55%', end: 'bottom bottom', scrub: 1, invalidateOnRefresh: true } });
+    deal.to(cards, { y: 0, rotation: (i) => DECK[i], scale: .92, opacity: 1, ease: 'power3.out', duration: .5, stagger: .14 })
+      .to(cards, { x: (i) => P[i][2] + 'rem', y: (i) => P[i][3] + 'rem', rotation: (i) => P[i][1], scale: (i) => P[i][0],
+        ease: 'power3.inOut', duration: .9, stagger: { each: .05, from: 'center' } }, '+=.1');
+    inner.forEach((els, i) => deal.to(els, { opacity: 1, y: 0, ease: 'power2.out', duration: .35, stagger: .06 }, `-=${i ? .32 : .45}`));
+    deal.to({}, { duration: .35 });
+    /* hover lifts on yPercent, a channel the scroll timeline never writes */
+    cards.forEach((c) => {
+      c.addEventListener('mouseenter', () => gsap.to(c, { yPercent: -5, duration: .5, ease: 'power3.out', zIndex: 5 }));
+      c.addEventListener('mouseleave', () => gsap.to(c, { yPercent: 0, duration: .6, ease: 'power3.out', zIndex: 1 }));
     });
     /* back to the dark for the process, which starts with room to change */
     ScrollTrigger.create({ trigger: '#process', start: 'top 95%', end: 'top 30%', scrub: true, onUpdate: (s) => paint(1 - s.progress) });
     return () => { sec.style.height = ''; document.body.style.backgroundColor = ''; nav.dataset.theme = 'dark'; };
   });
   mm.add('(max-width: 991px)', () => {
+    gsap.utils.toArray('#fan .vow').forEach((c, i) => gsap.from(c, { y: 70, rotation: i % 2 ? 3 : -3, opacity: 0, duration: 1, ease: 'power3.out',
+      scrollTrigger: { trigger: c, start: 'top 90%', once: true } }));
     /* the nav takes the theme of whichever chapter is under it */
     document.querySelectorAll('.light').forEach((el) => ScrollTrigger.create({ trigger: el, start: 'top 42px', end: 'bottom 42px',
       onEnter: () => nav.dataset.theme = 'light', onEnterBack: () => nav.dataset.theme = 'light',

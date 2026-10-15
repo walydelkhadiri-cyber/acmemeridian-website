@@ -14,25 +14,20 @@
      `frame-ancestors` is ignored in a meta tag and GitHub Pages cannot set
      headers, so the frame check lives in admin.js instead. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src https://slkyivycuxbjigwqpyzd.supabase.co; form-action 'self'; base-uri 'none'; object-src 'none'">
-<meta name="theme-color" content="#050506">
+<meta name="theme-color" content="#151515">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/inter-var.woff2" crossorigin>
-<link rel="stylesheet" href="/meridian.css">
+<link rel="preload" as="font" type="font/woff2" href="/assets/fonts/mona-sans-latin.woff2" crossorigin>
+<link rel="stylesheet" href="/assets/fonts/night.css">
+<link rel="stylesheet" href="/assets/admin.css">
 </head>
 <body class="admin">
 
 <header class="nav">
-  <a class="mark" href="/" aria-label="Acme Meridian — home">
-    <svg viewBox="0 0 140 100" aria-hidden="true" width="30" height="21">
-      <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M18 88V12l52 36 52-36v76" stroke-width="9"/>
-        <path d="M42 88l28-40 28 40" stroke-width="9"/>
-        <path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/>
-      </g>
-    </svg>
-    <span>Acme Meridian</span>
+  <a class="brand" href="/" aria-label="Acme Meridian — home">
+    <span class="sq"><svg viewBox="0 0 140 100" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 88V12l52 36 52-36v76" stroke-width="9"/><path d="M42 88l28-40 28 40" stroke-width="9"/><path d="M53 73h34" stroke-width="7" stroke-linejoin="miter"/></svg></span>
+    <b>Acme Meridian</b><i>Briefs</i>
   </a>
-  <p class="nav-note nav-back"><button type="button" id="signout" class="linkish">Sign out</button></p>
+  <button type="button" id="signout" class="linkish">Sign out</button>
 </header>
 
 <main class="adm">
